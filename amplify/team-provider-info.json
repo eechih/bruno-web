@@ -1,0 +1,15 @@
+{
+  "dev": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-brunoweb-dev-185717-authRole",
+      "UnauthRoleArn": "arn:aws:iam::089370838833:role/amplify-brunoweb-dev-185717-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::089370838833:role/amplify-brunoweb-dev-185717-authRole",
+      "Region": "us-east-1",
+      "DeploymentBucketName": "amplify-brunoweb-dev-185717-deployment",
+      "UnauthRoleName": "amplify-brunoweb-dev-185717-unauthRole",
+      "StackName": "amplify-brunoweb-dev-185717",
+      "StackId": "arn:aws:cloudformation:us-east-1:089370838833:stack/amplify-brunoweb-dev-185717/194f66e0-f246-11ed-aa3e-0a1bfcdcd2df",
+      "AmplifyAppId": "dnkzx9bfdmz2v"
+    }
+  }
+}

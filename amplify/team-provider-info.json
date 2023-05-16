@@ -10,6 +10,14 @@
       "StackName": "amplify-brunoweb-dev-185717",
       "StackId": "arn:aws:cloudformation:us-east-1:089370838833:stack/amplify-brunoweb-dev-185717/194f66e0-f246-11ed-aa3e-0a1bfcdcd2df",
       "AmplifyAppId": "dnkzx9bfdmz2v"
+    },
+    "categories": {
+      "hosting": {
+        "amplifyhosting": {
+          "appId": "dnkzx9bfdmz2v",
+          "type": "manual"
+        }
+      }
     }
   }
 }

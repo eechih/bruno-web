@@ -2,21 +2,45 @@
 /* eslint-disable */
 // this is an auto generated file. This will be overwritten
 
-export const getNoteById = /* GraphQL */ `
-  query GetNoteById($noteId: String!) {
-    getNoteById(noteId: $noteId) {
+export const getProduct = /* GraphQL */ `
+  query GetProduct($id: ID!) {
+    getProduct(id: $id) {
       id
       name
-      completed
+      description
+      price
+      cost
+      optionGrid
+      images
+      provider
+      offShelfAt
+      publishAt
+      createdAt
+      updatedAt
+      owner
     }
   }
 `;
-export const listNotes = /* GraphQL */ `
-  query ListNotes {
-    listNotes {
+export const listProducts = /* GraphQL */ `
+  query ListProducts(
+    $filter: FilterProductInput
+    $limit: Int
+    $nextToken: String
+  ) {
+    listProducts(filter: $filter, limit: $limit, nextToken: $nextToken) {
       id
       name
-      completed
+      description
+      price
+      cost
+      optionGrid
+      images
+      provider
+      offShelfAt
+      publishAt
+      createdAt
+      updatedAt
+      owner
     }
   }
 `;

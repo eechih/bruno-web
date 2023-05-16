@@ -1,6 +1,6 @@
 projects:
-  bruno-appsync-api:
-    schemaPath: src/graphql/schema.json
+  bruno-api:
+    schemaPath: src/graphql/schema.graphql
     includes:
       - src/graphql/**/*.ts
     excludes:
@@ -8,8 +8,8 @@ projects:
     extensions:
       amplify:
         codeGenTarget: typescript
-        generatedFileName: src/API.ts
+        generatedFileName: src/graphql/API.ts
         docsFilePath: src/graphql
         region: us-east-1
-        apiId: qui7e3qeuzggroreeswhtbvhhi
+        apiId: xgv2wk47kfd4hjc4spniqciwsy
         maxDepth: 2

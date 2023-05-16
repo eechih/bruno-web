@@ -1,3 +1,6 @@
+'use client'
+
+import { GraphQLQuery } from '@aws-amplify/api'
 import LoadingButton from '@mui/lab/LoadingButton'
 import Button from '@mui/material/Button'
 import Container from '@mui/material/Container'
@@ -7,11 +10,11 @@ import Typography from '@mui/material/Typography'
 import Grid from '@mui/material/Unstable_Grid2'
 import { useTheme } from '@mui/material/styles'
 import useMediaQuery from '@mui/material/useMediaQuery'
-import { API } from 'aws-amplify'
+import { API, Amplify, Cache } from 'aws-amplify'
 import moment from 'moment'
-import { useRouter } from 'next/router'
+import { useRouter } from 'next/navigation'
 import { SnackbarProvider, enqueueSnackbar } from 'notistack'
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import {
   Control,
   FormProvider,
@@ -21,12 +24,18 @@ import {
   useFormContext,
 } from 'react-hook-form'
 
+import awsConfig from '@/aws-exports'
 import Layout from '@/components/Layout'
 import StorageManager, {
   HashHexFileNameStrategy,
 } from '@/components/StorageManager'
 import WrappedBreadcrumbs from '@/components/WrappedBreadcrumbs'
 import { ErrorMessage, Input, Select } from '@/components/forms'
+import * as api from '@/graphql/API'
+import * as mutations from '@/graphql/mutations'
+import * as queries from '@/graphql/queries'
+
+Amplify.configure(awsConfig)
 
 enum Mode {
   CREATION = 'creation',
@@ -104,10 +113,13 @@ function ImageFieldArray(props: {
 
 let renderCount = 0
 
-export default function Index() {
+export default function Page({ params }: { params: { id: string } }) {
+  const { id } = params
+  const mode = id == 'create' ? Mode.CREATION : Mode.EDITION
+  const productId = id
+  console.log('productId', productId)
+
   const router = useRouter()
-  const [productId, setProductId] = useState<string | null>(null)
-  const [mode, setMode] = useState<Mode>(Mode.CREATION)
   const theme = useTheme()
   const matches = useMediaQuery(theme.breakpoints.up('md'), { noSsr: true })
 
@@ -117,27 +129,53 @@ export default function Index() {
   renderCount++
 
   useEffect(() => {
-    if (router.isReady) {
-      const productId = (router.query.productId as string) ?? null
-      const mode =
-        !productId || productId === 'create' ? Mode.CREATION : Mode.EDITION
-      setProductId(productId)
-      setMode(mode)
-    }
-  }, [router])
-
-  useEffect(() => {
     const loadData = async (productId: string) => {
-      console.log('loadData')
+      console.log('loadData', productId)
+      let product = Cache.getItem(productId)
+      if (!product) {
+        const res = await API.graphql<GraphQLQuery<api.GetProductQuery>>({
+          query: queries.getProduct,
+          variables: {
+            id: productId,
+          },
+        })
+        product = res.data?.getProduct
+      }
+      if (product) {
+        const cacheExpires = 900 * 1000 // 15 minutes
+        Cache.setItem(productId, product, {
+          expires: new Date().getTime() + cacheExpires,
+        })
+        const values = {
+          name: product.name,
+          price: product.price?.toString(),
+          cost: product.cost?.toString(),
+          provider: product.provider ?? '',
+          offShelfDate: moment(product.offShelfAt).format('yyyy-MM-DD'),
+          offShelfTime: moment(product.offShelfAt).format('HH:mm'),
+          description: product.description ?? '',
+          option: '',
+        } as Inputs
+        reset(values)
+      }
     }
-
     if (mode == Mode.EDITION && productId) loadData(productId)
   }, [mode, productId, reset])
 
   const createProduct = async (data: Inputs) => {
-    console.log('createProduct', data)
-    const res = await API.post('brunoapi', '/products', {
-      body: data,
+    // console.log('createProduct', data)
+    const variables: api.CreateProductMutationVariables = {
+      input: {
+        name: data.name,
+        price: Number(data.price),
+        cost: Number(data.cost),
+        description: data.description,
+        provider: data.provider,
+      },
+    }
+    const res = await API.graphql<GraphQLQuery<api.CreateProductMutation>>({
+      query: mutations.createProduct,
+      variables: variables,
     })
     console.log('res', res)
   }
@@ -169,7 +207,7 @@ export default function Index() {
     }
   }, [formState, mode, router])
 
-  if (!router.isReady) return <div>Loading...</div>
+  // if (!router.isReady) return <div>Loading...</div>
 
   return (
     <Layout>

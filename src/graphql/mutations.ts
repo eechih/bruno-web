@@ -2,26 +2,41 @@
 /* eslint-disable */
 // this is an auto generated file. This will be overwritten
 
-export const createNote = /* GraphQL */ `
-  mutation CreateNote($note: NoteInput!) {
-    createNote(note: $note) {
+export const createProduct = /* GraphQL */ `
+  mutation CreateProduct($input: CreateProductInput!) {
+    createProduct(input: $input) {
       id
       name
-      completed
+      description
+      price
+      cost
+      optionGrid
+      images
+      provider
+      offShelfAt
+      publishAt
+      createdAt
+      updatedAt
+      owner
     }
   }
 `;
-export const updateNote = /* GraphQL */ `
-  mutation UpdateNote($note: UpdateNoteInput!) {
-    updateNote(note: $note) {
+export const deleteProduct = /* GraphQL */ `
+  mutation DeleteProduct($input: DeleteProductInput!) {
+    deleteProduct(input: $input) {
       id
       name
-      completed
+      description
+      price
+      cost
+      optionGrid
+      images
+      provider
+      offShelfAt
+      publishAt
+      createdAt
+      updatedAt
+      owner
     }
-  }
-`;
-export const deleteNote = /* GraphQL */ `
-  mutation DeleteNote($noteId: String!) {
-    deleteNote(noteId: $noteId)
   }
 `;

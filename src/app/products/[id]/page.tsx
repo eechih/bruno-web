@@ -162,7 +162,7 @@ export default function Page({ params }: { params: { id: string } }) {
     if (mode == Mode.EDITION && productId) loadData(productId)
   }, [mode, productId, reset])
 
-  const createProduct = async (data: Inputs) => {
+  const createProduct = async (data: Inputs): Promise<api.Product> => {
     // console.log('createProduct', data)
     const variables: api.CreateProductMutationVariables = {
       input: {
@@ -178,10 +178,35 @@ export default function Page({ params }: { params: { id: string } }) {
       variables: variables,
     })
     console.log('res', res)
+    if (res.data?.createProduct) return res.data.createProduct
+    else throw Error('Failed to create product.')
   }
 
-  const updateProdcut = async (productId: string, data: Inputs) => {
+  const updateProdcut = async (
+    productId: string,
+    data: Inputs
+  ): Promise<api.Product> => {
     console.log('updateProdcut', data)
+    const input: api.UpdateProductInput = {
+      id: productId,
+    }
+    if (dirtyFields?.name) input.name = data.name
+    if (dirtyFields?.price) input.price = Number(data.price)
+    if (dirtyFields?.cost) input.cost = Number(data.cost)
+    if (dirtyFields?.description) input.description = data.description
+    if (dirtyFields?.provider) input.provider = data.provider
+    if (dirtyFields?.offShelfDate || dirtyFields?.offShelfTime)
+      input.offShelfAt = moment(
+        data.offShelfDate + 'T' + data.offShelfTime
+      ).toISOString()
+    const res = await API.graphql<GraphQLQuery<api.UpdateProductMutation>>({
+      query: mutations.updateProduct,
+      variables: { input },
+    })
+
+    console.log('res', res)
+    if (res.data?.updateProduct) return res.data.updateProduct
+    else throw Error('Failed to update product.')
   }
 
   const onSubmit: SubmitHandler<Inputs> = async data => {
@@ -189,14 +214,18 @@ export default function Page({ params }: { params: { id: string } }) {
       mode == Mode.EDITION && productId
         ? updateProdcut(productId, data)
         : createProduct(data)
-    return promise.catch(error => {
-      console.log(error)
-      const { message } = error as Error
-      setError('root.serverError', {
-        type: 'server',
-        message: message,
+    return promise
+      .then(product => {
+        Cache.setItem(product.id, product)
       })
-    })
+      .catch(error => {
+        console.log(error)
+        const { message } = error as Error
+        setError('root.serverError', {
+          type: 'server',
+          message: message,
+        })
+      })
   }
 
   useEffect(() => {

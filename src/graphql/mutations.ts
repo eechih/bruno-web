@@ -21,6 +21,25 @@ export const createProduct = /* GraphQL */ `
     }
   }
 `;
+export const updateProduct = /* GraphQL */ `
+  mutation UpdateProduct($input: UpdateProductInput!) {
+    updateProduct(input: $input) {
+      id
+      name
+      description
+      price
+      cost
+      optionGrid
+      images
+      provider
+      offShelfAt
+      publishAt
+      createdAt
+      updatedAt
+      owner
+    }
+  }
+`;
 export const deleteProduct = /* GraphQL */ `
   mutation DeleteProduct($input: DeleteProductInput!) {
     deleteProduct(input: $input) {

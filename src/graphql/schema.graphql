@@ -6,6 +6,7 @@
 type Mutation {
   createProduct(input: CreateProductInput!): Product
   deleteProduct(input: DeleteProductInput!): Product
+  updateProduct(input: UpdateProductInput!): Product
 }
 
 type Product {

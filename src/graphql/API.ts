@@ -31,6 +31,19 @@ export type Product = {
   owner?: string | null,
 };
 
+export type UpdateProductInput = {
+  id: string,
+  name?: string | null,
+  description?: string | null,
+  price?: number | null,
+  cost?: number | null,
+  optionGrid?: Array< string | null > | null,
+  images?: Array< string | null > | null,
+  provider?: string | null,
+  offShelfAt?: string | null,
+  publishAt?: string | null,
+};
+
 export type DeleteProductInput = {
   id: string,
 };
@@ -72,6 +85,29 @@ export type CreateProductMutationVariables = {
 
 export type CreateProductMutation = {
   createProduct?:  {
+    __typename: "Product",
+    id: string,
+    name?: string | null,
+    description?: string | null,
+    price?: number | null,
+    cost?: number | null,
+    optionGrid?: Array< string | null > | null,
+    images?: Array< string | null > | null,
+    provider?: string | null,
+    offShelfAt?: string | null,
+    publishAt?: string | null,
+    createdAt?: string | null,
+    updatedAt?: string | null,
+    owner?: string | null,
+  } | null,
+};
+
+export type UpdateProductMutationVariables = {
+  input: UpdateProductInput,
+};
+
+export type UpdateProductMutation = {
+  updateProduct?:  {
     __typename: "Product",
     id: string,
     name?: string | null,

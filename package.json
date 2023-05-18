@@ -10,7 +10,7 @@
     "deploy": "amplify publish -y"
   },
   "dependencies": {
-    "@aws-amplify/ui-react": "^4.6.1",
+    "@aws-amplify/ui-react": "^4.6.2",
     "@emotion/cache": "^11.11.0",
     "@emotion/react": "^11.11.0",
     "@emotion/server": "^11.11.0",

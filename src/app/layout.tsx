@@ -1,3 +1,4 @@
+import '@aws-amplify/ui-react/styles.css'
 import { Amplify } from 'aws-amplify'
 import { Inter } from 'next/font/google'
 import './globals.css'

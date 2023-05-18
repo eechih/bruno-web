@@ -104,7 +104,7 @@ function ImageFieldArray(props: {
   return (
     <StorageManager
       acceptedFileTypes={['image/*']}
-      accessLevel="private"
+      accessLevel="public"
       defaultFiles={fields}
       processFile={HashHexFileNameStrategy}
     />

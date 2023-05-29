@@ -12,17 +12,41 @@ export type Product = {
   description?: string
 }
 
-export type ListProductsQuery = {
+export type CreateProductInput = Omit<Product, 'id'>
+
+export type UpdateProductInput = Omit<Partial<Product>, 'id'> & {
+  id: string
+}
+
+export type ListProductsOperation = {
   data: {
     listProducts: Array<Product>
   }
 }
 
-export type GetProductQuery = {
+export type GetProductOperation = {
   data: {
     getProduct: Product
   }
   variables: {
     id: string
+  }
+}
+
+export type CreateProductOperation = {
+  data: {
+    createProduct: Product
+  }
+  variables: {
+    input: CreateProductInput
+  }
+}
+
+export type UpdateProductOperation = {
+  data: {
+    updateProduct: Product
+  }
+  variables: {
+    input: UpdateProductInput
   }
 }

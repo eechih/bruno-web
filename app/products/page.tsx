@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 
 import {
+  Box,
   Button,
   Card,
   CardActions,
@@ -9,7 +10,7 @@ import {
   CardMedia,
   Unstable_Grid2 as Grid,
   Typography
-} from '@/components/material'
+} from '@/components/mui/material'
 import { listProducts } from '@/lib/bruno'
 
 export default async function Page() {
@@ -20,7 +21,10 @@ export default async function Page() {
     notFound()
   }
   return (
-    <div>
+    <Box>
+      <Button LinkComponent={Link} href="/products/create">
+        Create Product
+      </Button>
       <Grid container spacing={2}>
         {products.map(product => {
           return (
@@ -59,6 +63,6 @@ export default async function Page() {
           )
         })}
       </Grid>
-    </div>
+    </Box>
   )
 }

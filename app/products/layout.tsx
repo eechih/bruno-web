@@ -1,4 +1,4 @@
-import { Container } from '@/components/material'
+import { Container } from '@/components/mui/material'
 import { ReactChildren } from '@/lib/types'
 
 export default function Layout({ children }: ReactChildren) {

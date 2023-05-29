@@ -1,5 +1,17 @@
+import {
+  createProductMutation,
+  updateProductMutation
+} from '@/lib/bruno/mutations/product'
 import { getProductQuery, listProductsQuery } from '@/lib/bruno/queries/product'
-import { GetProductQuery, ListProductsQuery, Product } from '@/lib/bruno/types'
+import {
+  CreateProductInput,
+  CreateProductOperation,
+  GetProductOperation,
+  ListProductsOperation,
+  Product,
+  UpdateProductInput,
+  UpdateProductOperation
+} from '@/lib/bruno/types'
 import { isApiError } from '@/lib/type-guards'
 
 const endpoint = process.env.AWS_APPSYNC_GRAPHQL_ENDPOINT!
@@ -63,16 +75,39 @@ export async function brunoFetch<T>({
 }
 
 export async function listProducts(): Promise<Product[]> {
-  const res = await brunoFetch<ListProductsQuery>({
+  const res = await brunoFetch<ListProductsOperation>({
     query: listProductsQuery
   })
   return res.body.data.listProducts ?? []
 }
 
 export async function getProduct(id: string): Promise<Product> {
-  const res = await brunoFetch<GetProductQuery>({
+  const res = await brunoFetch<GetProductOperation>({
     query: getProductQuery,
     variables: { id }
   })
   return res.body.data.getProduct
+}
+
+export async function createProduct(
+  input: CreateProductInput
+): Promise<Product> {
+  const res = await brunoFetch<CreateProductOperation>({
+    query: createProductMutation,
+    variables: { input },
+    cache: 'no-store'
+  })
+  return res.body.data.createProduct
+}
+
+export async function updateProduct(
+  input: UpdateProductInput
+): Promise<Product> {
+  console.log('updateProduct', input)
+  const res = await brunoFetch<UpdateProductOperation>({
+    query: updateProductMutation,
+    variables: { input },
+    cache: 'no-store'
+  })
+  return res.body.data.updateProduct
 }

@@ -21,13 +21,12 @@ export async function POST(req: NextRequest): Promise<Response> {
       )
     }
 
-    return NextResponse.json({ status: 500 })
+    return NextResponse.json({ error: JSON.stringify(e) }, { status: 500 })
   }
 }
 
 export async function PUT(req: NextRequest): Promise<Response> {
   const input = await req.json()
-
   try {
     const product = await updateProduct(input)
     return NextResponse.json({ status: 200, data: product })
@@ -39,6 +38,6 @@ export async function PUT(req: NextRequest): Promise<Response> {
       )
     }
 
-    return NextResponse.json({ status: 500 })
+    return NextResponse.json(e, { status: 500 })
   }
 }

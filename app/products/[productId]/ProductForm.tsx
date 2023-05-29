@@ -70,7 +70,6 @@ export default function ProductForm({ product }: ProductFormProps) {
     defaultValues: isCreation ? initialInputs : convertToInputs(product)
   })
   const { control, formState } = methods
-  const { errors } = formState
 
   return (
     <FormProvider {...methods}>
@@ -173,6 +172,7 @@ export default function ProductForm({ product }: ProductFormProps) {
               color="inherit"
               LinkComponent={Link}
               href="/products"
+              disabled={formState.isSubmitting}
             >
               取消
             </Button>
@@ -180,7 +180,9 @@ export default function ProductForm({ product }: ProductFormProps) {
           </Stack>
         </Grid>
         <Grid xs={12}>
-          {errors.root && <ErrorMessage error={errors.root} />}
+          {formState.errors.root && (
+            <ErrorMessage error={formState.errors.root} />
+          )}
         </Grid>
       </Grid>
     </FormProvider>

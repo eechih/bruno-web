@@ -11,7 +11,9 @@ import {
   Unstable_Grid2 as Grid,
   Typography
 } from '@/components/mui/material'
+import { SnackbarProvider } from '@/components/notistack'
 import { listProducts } from '@/lib/bruno'
+import DeleteProductButton from './DeleteProductButton'
 
 export default async function Page() {
   const products = await listProducts()
@@ -22,6 +24,7 @@ export default async function Page() {
   }
   return (
     <Box>
+      <SnackbarProvider />
       <Button LinkComponent={Link} href="/products/create">
         Create Product
       </Button>
@@ -29,7 +32,7 @@ export default async function Page() {
         {products.map(product => {
           return (
             <Grid key={product.id} xs={12} sm={6} md={4} lg={3} xl={3}>
-              <Card>
+              <Card id={product.id}>
                 <CardMedia
                   component="img"
                   alt="green iguana"
@@ -49,13 +52,13 @@ export default async function Page() {
                   </Typography>
                 </CardContent>
                 <CardActions>
-                  <Button size="small">Share</Button>
+                  <DeleteProductButton id={product.id} />
                   <Button
                     size="small"
                     LinkComponent={Link}
                     href={`/products/${product.id}`}
                   >
-                    Learn More
+                    編輯
                   </Button>
                 </CardActions>
               </Card>

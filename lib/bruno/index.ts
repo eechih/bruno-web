@@ -1,11 +1,14 @@
 import {
   createProductMutation,
+  deleteProductMutation,
   updateProductMutation
 } from '@/lib/bruno/mutations/product'
 import { getProductQuery, listProductsQuery } from '@/lib/bruno/queries/product'
 import {
   CreateProductInput,
   CreateProductOperation,
+  DeleteProductInput,
+  DeleteProductOperation,
   GetProductOperation,
   ListProductsOperation,
   Product,
@@ -103,11 +106,20 @@ export async function createProduct(
 export async function updateProduct(
   input: UpdateProductInput
 ): Promise<Product> {
-  console.log('updateProduct', input)
   const res = await brunoFetch<UpdateProductOperation>({
     query: updateProductMutation,
     variables: { input },
     cache: 'no-store'
   })
   return res.body.data.updateProduct
+}
+
+export async function deleteProduct(
+  input: DeleteProductInput
+): Promise<Product> {
+  const res = await brunoFetch<DeleteProductOperation>({
+    query: deleteProductMutation,
+    variables: { input }
+  })
+  return res.body.data.deleteProduct
 }

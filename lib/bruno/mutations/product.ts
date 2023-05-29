@@ -11,9 +11,24 @@ export const createProductMutation = /* GraphQL */ `
     }
   }
 `
+
 export const updateProductMutation = /* GraphQL */ `
   mutation UpdateProduct($input: UpdateProductInput!) {
     updateProduct(input: $input) {
+      id
+      name
+      description
+      price
+      cost
+      provider
+      offShelfAt
+    }
+  }
+`
+
+export const deleteProductMutation = /* GraphQL */ `
+  mutation DeleteProduct($input: DeleteProductInput!) {
+    deleteProduct(input: $input) {
       id
       name
       description

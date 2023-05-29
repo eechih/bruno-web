@@ -11,9 +11,11 @@ import {
   Stack,
   Typography
 } from '@/components/mui/material'
+import { SnackbarProvider } from '@/components/notistack'
 import { Product } from '@/lib/bruno/types'
 import { providers } from '@/lib/constants'
-import ProductSubmitButton from './ProductSubmitButton'
+import CreateProductButton from './CreateProductButton'
+import UpdateProductButton from './UpdateProductButton'
 
 export type ProductFormInputs = {
   id?: string
@@ -73,6 +75,7 @@ export default function ProductForm({ product }: ProductFormProps) {
 
   return (
     <FormProvider {...methods}>
+      <SnackbarProvider />
       <Grid container spacing={2}>
         <Grid xs={12} md={6}>
           <Stack spacing={2}>
@@ -167,16 +170,26 @@ export default function ProductForm({ product }: ProductFormProps) {
 
         <Grid xs={12}>
           <Stack direction="row" justifyContent="end" spacing={2}>
+            <Link
+              href={product ? `/products#${product.id}` : '/products'}
+              scroll={false}
+            >
+              返回
+            </Link>
             <Button
               variant="outlined"
               color="inherit"
               LinkComponent={Link}
-              href="/products"
+              href={product ? `/products#${product.id}` : '/products'}
               disabled={formState.isSubmitting}
             >
               取消
             </Button>
-            <ProductSubmitButton />
+            {product ? (
+              <UpdateProductButton productId={product.id} />
+            ) : (
+              <CreateProductButton />
+            )}
           </Stack>
         </Grid>
         <Grid xs={12}>

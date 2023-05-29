@@ -18,6 +18,8 @@ export type UpdateProductInput = Omit<Partial<Product>, 'id'> & {
   id: string
 }
 
+export type DeleteProductInput = Pick<Product, 'id'>
+
 export type ListProductsOperation = {
   data: {
     listProducts: Array<Product>
@@ -48,5 +50,14 @@ export type UpdateProductOperation = {
   }
   variables: {
     input: UpdateProductInput
+  }
+}
+
+export type DeleteProductOperation = {
+  data: {
+    deleteProduct: Product
+  }
+  variables: {
+    input: DeleteProductInput
   }
 }

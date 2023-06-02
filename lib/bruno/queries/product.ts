@@ -1,13 +1,16 @@
 export const listProductsQuery = /* GraphQL */ `
   query listProducts {
     listProducts {
-      id
-      name
-      price
-      cost
-      provider
-      offShelfAt
-      description
+      items {
+        id
+        name
+        price
+        cost
+        provider
+        offShelfAt
+        description
+      }
+      nextToken
     }
   }
 `

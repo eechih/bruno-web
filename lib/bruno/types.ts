@@ -1,5 +1,6 @@
 export type Connection<T> = {
   items: Array<T>
+  nextToken?: string
 }
 
 export type Product = {
@@ -22,7 +23,7 @@ export type DeleteProductInput = Pick<Product, 'id'>
 
 export type ListProductsOperation = {
   data: {
-    listProducts: Array<Product>
+    listProducts: Connection<Product>
   }
 }
 
@@ -59,5 +60,26 @@ export type DeleteProductOperation = {
   }
   variables: {
     input: DeleteProductInput
+  }
+}
+
+export type Image = {
+  src: string
+}
+
+export type Post = {
+  fbPostId: string
+  message?: string
+  images: Array<Image>
+  createdAt: string
+}
+
+export type ImportPostOperation = {
+  data: {
+    importPost: Post
+  }
+  variables: {
+    fbPostUrl: string
+    newBrowser?: boolean
   }
 }

@@ -10,12 +10,15 @@ import {
   DeleteProductInput,
   DeleteProductOperation,
   GetProductOperation,
+  ImportPostOperation,
   ListProductsOperation,
+  Post,
   Product,
   UpdateProductInput,
   UpdateProductOperation
 } from '@/lib/bruno/types'
 import { isApiError } from '@/lib/type-guards'
+import { importPostQuery } from './queries/post'
 
 const endpoint = process.env.AWS_APPSYNC_GRAPHQL_ENDPOINT!
 const key = process.env.AWS_APPSYNC_APIKEY!
@@ -48,7 +51,8 @@ export async function brunoFetch<T>({
         ...(variables && { variables })
       }),
       cache,
-      next: { revalidate: 900 } // 15 minutes
+      // next: { revalidate: 900 } // 15 minutes
+      next: { revalidate: false }
     })
 
     const body = await result.json()
@@ -81,7 +85,8 @@ export async function listProducts(): Promise<Product[]> {
   const res = await brunoFetch<ListProductsOperation>({
     query: listProductsQuery
   })
-  return res.body.data.listProducts ?? []
+  console.log('listProducts res', res)
+  return res.body.data.listProducts.items ?? []
 }
 
 export async function getProduct(id: string): Promise<Product> {
@@ -122,4 +127,15 @@ export async function deleteProduct(
     variables: { input }
   })
   return res.body.data.deleteProduct
+}
+
+export async function importPost(
+  fbPostUrl: string,
+  newBrowser?: boolean
+): Promise<Post> {
+  const res = await brunoFetch<ImportPostOperation>({
+    query: importPostQuery,
+    variables: { fbPostUrl, newBrowser }
+  })
+  return res.body.data.importPost
 }

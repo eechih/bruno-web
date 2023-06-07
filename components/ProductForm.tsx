@@ -4,6 +4,8 @@ import moment from 'moment'
 import Link from 'next/link'
 import { FormProvider, useForm } from 'react-hook-form'
 
+import CreateProductButton from '@/components/CreateProductButton'
+import UpdateProductButton from '@/components/UpdateProductButton'
 import { ErrorMessage, Input, Select } from '@/components/forms'
 import {
   Button,
@@ -11,11 +13,8 @@ import {
   Stack,
   Typography
 } from '@/components/mui/material'
-import { SnackbarProvider } from '@/components/notistack'
-import { Product } from '@/lib/bruno/types'
 import { providers } from '@/lib/constants'
-import CreateProductButton from './CreateProductButton'
-import UpdateProductButton from './UpdateProductButton'
+import { Product } from '@/models'
 
 export type ProductFormInputs = {
   id?: string
@@ -30,7 +29,7 @@ export type ProductFormInputs = {
   images: { key: string }[]
 }
 
-const initialInputs: ProductFormInputs = {
+const defaultValues: ProductFormInputs = {
   name: '',
   price: '',
   cost: '',
@@ -42,40 +41,19 @@ const initialInputs: ProductFormInputs = {
   images: []
 }
 
-function convertToInputs(product: Product): ProductFormInputs {
-  const offShelfAt = moment(product.offShelfAt)
-  const offShelfDate = offShelfAt.isValid()
-    ? offShelfAt.format('yyyy-MM-DD')
-    : ''
-  const offShelfTime = offShelfAt.isValid() ? offShelfAt.format('HH:mm') : ''
-
-  return {
-    id: product.id,
-    name: product.name,
-    price: product.price?.toString() ?? '',
-    cost: product.cost?.toString() ?? '',
-    provider: product.provider ?? '',
-    offShelfDate,
-    offShelfTime,
-    description: product.description ?? '',
-    option: '',
-    images: []
-  }
+export type ProductFormProps = {
+  initialValues?: ProductFormInputs
 }
 
-export type ProductFormProps = { product?: Product }
-
-export default function ProductForm({ product }: ProductFormProps) {
-  const isCreation = !product
-
+export default function ProductForm({ initialValues }: ProductFormProps) {
   const methods = useForm<ProductFormInputs>({
-    defaultValues: isCreation ? initialInputs : convertToInputs(product)
+    defaultValues: initialValues ?? defaultValues
   })
   const { control, formState } = methods
+  const productId = initialValues?.id
 
   return (
     <FormProvider {...methods}>
-      <SnackbarProvider />
       <Grid container spacing={2}>
         <Grid xs={12} md={6}>
           <Stack spacing={2}>
@@ -88,7 +66,7 @@ export default function ProductForm({ product }: ProductFormProps) {
               type="txt"
               required
               fullWidth
-              autoFocus={isCreation}
+              autoFocus={!initialValues}
             />
             <Input
               name="price"
@@ -171,23 +149,14 @@ export default function ProductForm({ product }: ProductFormProps) {
         <Grid xs={12}>
           <Stack direction="row" justifyContent="end" spacing={2}>
             <Link
-              href={product ? `/products#${product.id}` : '/products'}
+              href={productId ? `/products#${productId}` : '/products'}
               scroll={false}
             >
-              返回
+              <Button variant="outlined" color="inherit">
+                取消
+              </Button>
             </Link>
-            <Button
-              variant="outlined"
-              color="inherit"
-              LinkComponent={Link}
-              href={product ? `/products#${product.id}` : '/products'}
-              disabled={formState.isSubmitting}
-            >
-              取消
-            </Button>
-            {product ? (
-              <UpdateProductButton productId={product.id} />
-            ) : (
+            {(productId && <UpdateProductButton productId={productId} />) || (
               <CreateProductButton />
             )}
           </Stack>
@@ -200,4 +169,25 @@ export default function ProductForm({ product }: ProductFormProps) {
       </Grid>
     </FormProvider>
   )
+}
+
+export function convertToInputs(product: Product): ProductFormInputs {
+  const offShelfAt = moment(product.offShelfAt)
+  const offShelfDate = offShelfAt.isValid()
+    ? offShelfAt.format('yyyy-MM-DD')
+    : ''
+  const offShelfTime = offShelfAt.isValid() ? offShelfAt.format('HH:mm') : ''
+
+  return {
+    id: product.id,
+    name: product.name,
+    price: product.price?.toString() ?? '',
+    cost: product.cost?.toString() ?? '',
+    provider: product.provider ?? '',
+    offShelfDate,
+    offShelfTime,
+    description: product.description ?? '',
+    option: '',
+    images: []
+  }
 }

@@ -1,14 +1,18 @@
-import { getProduct } from '@/lib/bruno'
-import ProductForm from './ProductForm'
+'use client'
 
-export default async function Page({
-  params: { productId }
-}: {
+import ProductForm, { convertToInputs } from '@/components/ProductForm'
+import useGetProduct from '@/hooks/useGetProduct'
+
+type PageProps = {
   params: { productId: string }
-}) {
-  let product
-  if (productId && productId !== 'create') {
-    product = await getProduct(productId)
-  }
-  return <ProductForm product={product} />
+}
+
+export default function Page({ params: { productId } }: PageProps) {
+  const { product, productLoading } = useGetProduct(productId)
+
+  if (productLoading) return 'Loading...'
+
+  return (
+    <>{product && <ProductForm initialValues={convertToInputs(product)} />}</>
+  )
 }

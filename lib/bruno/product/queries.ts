@@ -3,12 +3,6 @@ export const listProductsQuery = /* GraphQL */ `
     listProducts {
       items {
         id
-        name
-        price
-        cost
-        provider
-        offShelfAt
-        description
       }
       nextToken
     }

@@ -1,20 +1,26 @@
 'use client'
 
+import { SnackbarProvider } from '@/components/notistack'
 import { useRouter } from 'next/navigation'
 import { startTransition } from 'react'
 import { SubmitHandler, useFormContext } from 'react-hook-form'
 
 import { LoadingButton } from '@/components/mui/lab'
 import { enqueueSnackbar } from '@/components/notistack'
-import { UpdateProductInput } from '@/lib/bruno/types'
-import { toOffShelfAt } from '../utils'
+import useUpdateProduct from '@/hooks/useUpdateProduct'
+import { toOffShelfAt } from '@/lib/utils'
+import { UpdateProductInput } from '@/models'
 import { ProductFormInputs } from './ProductForm'
+
+type UpdateProductButtonProps = {
+  productId: string
+}
 
 export default function UpdateProductButton({
   productId
-}: {
-  productId: string
-}) {
+}: UpdateProductButtonProps) {
+  const { updateProduct } = useUpdateProduct(productId)
+
   const { handleSubmit, reset, formState, setError } =
     useFormContext<ProductFormInputs>()
   const router = useRouter()
@@ -31,16 +37,7 @@ export default function UpdateProductButton({
       if (dirtyFields.offShelfDate || dirtyFields.offShelfTime)
         input.offShelfAt = toOffShelfAt(data.offShelfDate, data.offShelfTime)
 
-      const res = await fetch(`/api/products`, {
-        method: 'PUT',
-        body: JSON.stringify(input)
-      })
-      if (!res.ok) {
-        const { error } = await res.json()
-        throw Error(error.message)
-      }
-      await fetch(`/api/revalidate?path=/products/[productId]`)
-      await fetch(`/api/revalidate?path=/products`)
+      await updateProduct({ input })
       enqueueSnackbar('儲存成功', {
         variant: 'success',
         autoHideDuration: 2000
@@ -59,14 +56,17 @@ export default function UpdateProductButton({
   }
 
   return (
-    <LoadingButton
-      variant="contained"
-      color="primary"
-      onClick={handleSubmit(onSubmit)}
-      disabled={!formState.isDirty || !formState.isValid}
-      loading={formState.isSubmitting}
-    >
-      儲存變更
-    </LoadingButton>
+    <>
+      <SnackbarProvider />
+      <LoadingButton
+        variant="contained"
+        color="primary"
+        onClick={handleSubmit(onSubmit)}
+        disabled={!formState.isDirty || !formState.isValid}
+        loading={formState.isSubmitting}
+      >
+        儲存變更
+      </LoadingButton>
+    </>
   )
 }

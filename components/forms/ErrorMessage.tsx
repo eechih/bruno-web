@@ -1,4 +1,5 @@
-import { Alert, Stack } from '@/components/mui/material'
+import Alert from '@mui/material/Alert'
+import Stack from '@mui/material/Stack'
 import { GlobalError } from 'react-hook-form'
 
 export default function ErrorMessage(props: {

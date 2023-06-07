@@ -1,10 +1,11 @@
 'use client'
 
+import Box from '@mui/material/Box'
+import Button from '@mui/material/Button'
+import Grid from '@mui/material/Unstable_Grid2'
 import Link from 'next/link'
 
 import ProductEntry from '@/components/ProductEntry'
-import { Box, Button, Unstable_Grid2 as Grid } from '@/components/mui/material'
-
 import useListProducts from '@/hooks/useListProducts'
 
 export default function Page() {

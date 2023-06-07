@@ -1,10 +1,10 @@
 'use client'
 
+import LoadingButton from '@mui/lab/LoadingButton'
 import { useRouter } from 'next/navigation'
 import { startTransition } from 'react'
 import { SubmitHandler, useFormContext } from 'react-hook-form'
 
-import { LoadingButton } from '@/components/mui/lab'
 import useCreateProduct from '@/hooks/useCreateProduct'
 import { toOffShelfAt } from '@/lib/utils'
 import { CreateProductInput } from '@/models'

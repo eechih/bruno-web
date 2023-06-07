@@ -1,5 +1,10 @@
 'use client'
 
+import { Product } from '@/models'
+import Button from '@mui/material/Button'
+import Stack from '@mui/material/Stack'
+import Typography from '@mui/material/Typography'
+import Grid from '@mui/material/Unstable_Grid2'
 import moment from 'moment'
 import Link from 'next/link'
 import { FormProvider, useForm } from 'react-hook-form'
@@ -8,14 +13,7 @@ import CreateProductButton from '@/components/CreateProductButton'
 import ImageUploader from '@/components/ImageUploader'
 import UpdateProductButton from '@/components/UpdateProductButton'
 import { ErrorMessage, Input, Select } from '@/components/forms'
-import {
-  Button,
-  Unstable_Grid2 as Grid,
-  Stack,
-  Typography
-} from '@/components/mui/material'
 import { providers } from '@/lib/constants'
-import { Product } from '@/models'
 
 export type ProductFormInputs = {
   id?: string

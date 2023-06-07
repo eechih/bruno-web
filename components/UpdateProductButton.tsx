@@ -1,12 +1,11 @@
 'use client'
 
-import { SnackbarProvider } from '@/components/notistack'
+import LoadingButton from '@mui/lab/LoadingButton'
 import { useRouter } from 'next/navigation'
+import { enqueueSnackbar, SnackbarProvider } from 'notistack'
 import { startTransition } from 'react'
 import { SubmitHandler, useFormContext } from 'react-hook-form'
 
-import { LoadingButton } from '@/components/mui/lab'
-import { enqueueSnackbar } from '@/components/notistack'
 import useUpdateProduct from '@/hooks/useUpdateProduct'
 import { toOffShelfAt } from '@/lib/utils'
 import { UpdateProductInput } from '@/models'

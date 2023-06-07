@@ -1,7 +1,7 @@
 'use client'
-import { LoadingButton } from '@/components/mui/lab'
-import { SnackbarProvider, enqueueSnackbar } from '@/components/notistack'
 import useDeleteProduct from '@/hooks/useDeleteProduct'
+import LoadingButton from '@mui/lab/LoadingButton'
+import { SnackbarProvider, enqueueSnackbar } from 'notistack'
 
 type DeleteProductButtonProps = {
   id: string

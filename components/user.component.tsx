@@ -3,7 +3,7 @@
 import { useSession } from 'next-auth/react'
 
 export default function User() {
-  const { data: session, status } = useSession({ required: true })
+  const { data: session, status } = useSession()
 
   if (status === 'loading') {
     return <>Loading or not authenticated...</>

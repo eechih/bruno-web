@@ -17,6 +17,7 @@
     "@mui/icons-material": "^5.11.16",
     "@mui/lab": "5.0.0-alpha.131",
     "@mui/material": "^5.13.5",
+    "graphql": "^16.6.0",
     "moment": "^2.29.4",
     "next": "13.4.3",
     "next-auth": "^4.22.1",

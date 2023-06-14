@@ -46,11 +46,8 @@ export default function UpdateProductButton({
       })
       reset(data)
     } catch (error) {
-      const { message } = error as Error
-      setError('root.serverError', {
-        type: 'server',
-        message: message
-      })
+      console.log('Error', error)
+      setError('root.serverError', Object.assign({}, error, { type: 'server' }))
     }
   }
 

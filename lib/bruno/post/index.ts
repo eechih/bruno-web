@@ -1,4 +1,4 @@
-import brunoFetch from '../fetcher'
+import { graphql } from '../bruno-api'
 import { importPostQuery } from './queries'
 import { Post } from './types'
 
@@ -11,13 +11,14 @@ interface ImportPostOperation {
     importPost: Post
   }
 }
+
 export async function importPost(
   fbPostUrl: string,
   newBrowser?: boolean
 ): Promise<Post> {
-  const res = await brunoFetch<ImportPostOperation>({
+  const res = await graphql<ImportPostOperation>({
     query: importPostQuery,
     variables: { fbPostUrl, newBrowser }
   })
-  return res.body.data.importPost
+  return res.data.importPost
 }

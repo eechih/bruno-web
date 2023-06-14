@@ -1,4 +1,4 @@
-import brunoFetch from '../fetcher'
+import { graphql } from '../bruno-api'
 import {
   createProductMutation,
   deleteProductMutation,
@@ -22,15 +22,16 @@ interface ListProductsOperation {
     listProducts: ProductConnection
   }
 }
+
 export async function listProducts(
   nextToken?: string
 ): Promise<ProductConnection> {
   const limit = 2
-  const res = await brunoFetch<ListProductsOperation>({
+  const res = await graphql<ListProductsOperation>({
     query: listProductsQuery,
     variables: { limit, nextToken }
   })
-  return res.body.data.listProducts
+  return res.data.listProducts
 }
 
 interface GetProductOperation {
@@ -43,11 +44,11 @@ interface GetProductOperation {
 }
 
 export async function getProduct(id: string): Promise<Product> {
-  const res = await brunoFetch<GetProductOperation>({
+  const res = await graphql<GetProductOperation>({
     query: getProductQuery,
     variables: { id }
   })
-  return res.body.data.getProduct
+  return res.data.getProduct
 }
 
 interface CreateProductOperation {
@@ -62,11 +63,11 @@ interface CreateProductOperation {
 export async function createProduct(
   input: CreateProductInput
 ): Promise<Product> {
-  const res = await brunoFetch<CreateProductOperation>({
+  const res = await graphql<CreateProductOperation>({
     query: createProductMutation,
     variables: { input }
   })
-  return res.body.data.createProduct
+  return res.data.createProduct
 }
 
 interface UpdateProductOperation {
@@ -81,11 +82,11 @@ interface UpdateProductOperation {
 export async function updateProduct(
   input: UpdateProductInput
 ): Promise<Product> {
-  const res = await brunoFetch<UpdateProductOperation>({
+  const res = await graphql<UpdateProductOperation>({
     query: updateProductMutation,
     variables: { input }
   })
-  return res.body.data.updateProduct
+  return res.data.updateProduct
 }
 
 interface DeleteProductOperation {
@@ -100,9 +101,9 @@ interface DeleteProductOperation {
 export async function deleteProduct(
   input: DeleteProductInput
 ): Promise<Product> {
-  const res = await brunoFetch<DeleteProductOperation>({
+  const res = await graphql<DeleteProductOperation>({
     query: deleteProductMutation,
     variables: { input }
   })
-  return res.body.data.deleteProduct
+  return res.data.deleteProduct
 }

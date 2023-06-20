@@ -27,7 +27,7 @@ export async function graphql<T>({
     query: query,
     variables: variables,
     authMode: GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS,
-    authToken: session?.access_token
+    authToken: session?.accessToken
   })
 
   if (result.errors) {

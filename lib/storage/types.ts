@@ -1,4 +1,5 @@
 import {
+  DeleteObjectCommandOutput,
   GetObjectCommandOutput,
   _Object as ListObjectsCommandOutputContent
 } from '@aws-sdk/client-s3'
@@ -41,3 +42,7 @@ export type GetConfig = CommonStorageOptions & {
 }
 
 export type GetOutput = GetObjectCommandOutput | string
+
+export type RemoveConfig = CommonStorageOptions & {}
+
+export type RemoveOutput = DeleteObjectCommandOutput

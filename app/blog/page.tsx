@@ -4,7 +4,7 @@ import Button from '@mui/material/Button'
 import { useSession } from 'next-auth/react'
 
 import logger from '@/lib/logger'
-import { get, list, put } from '@/lib/storage'
+import { get, list, put, remove } from '@/lib/storage'
 
 export default function Page() {
   const session = useSession()
@@ -42,9 +42,7 @@ export default function Page() {
       <div>
         <Button
           onClick={() => {
-            list('', { level: 'private', pageSize: 2 }).then(data =>
-              logger.info(data)
-            )
+            list('', { level: 'private' }).then(data => logger.info(data))
           }}
         >
           Private List
@@ -68,6 +66,17 @@ export default function Page() {
           }}
         >
           Get
+        </Button>
+      </div>
+      <div>
+        <Button
+          onClick={() => {
+            remove('private-s3.txt', { level: 'private' }).then(data =>
+              logger.info(data)
+            )
+          }}
+        >
+          Private Delete
         </Button>
       </div>
     </>

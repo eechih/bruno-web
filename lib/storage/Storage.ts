@@ -1,5 +1,7 @@
 import { Sha256 } from '@aws-crypto/sha256-browser'
 import {
+  DeleteObjectCommand,
+  DeleteObjectCommandInput,
   GetObjectCommand,
   GetObjectCommandInput,
   ListObjectsV2Command,
@@ -22,7 +24,9 @@ import {
   ListConfig,
   ListOutput,
   PutConfig,
-  PutResult
+  PutResult,
+  RemoveConfig,
+  RemoveOutput
 } from './types'
 
 const region = process.env.NEXT_PUBLIC_AWS_S3_BUCKET_REGION!
@@ -55,6 +59,10 @@ export const put = async (
   const prefix = await _prefix(opt)
   const finalKey = prefix + key
   const type = config?.contentType ?? 'binary/octet-stream'
+  const s3 = new S3Client({
+    region,
+    credentials: session.credentials
+  })
 
   logger.info('finalKey %s', finalKey)
   const params: PutObjectCommandInput = {
@@ -65,18 +73,15 @@ export const put = async (
   }
 
   try {
-    const s3 = new S3Client({
-      region,
-      credentials: session.credentials
-    })
     const response = await s3.send(new PutObjectCommand(params))
-    logger.debug(response)
+    logger.debug('upload result', response)
+    logger.debug(`Upload success for ${key}`)
     return {
       key: finalKey
     }
-  } catch (err) {
-    logger.error(err)
-    throw err
+  } catch (error) {
+    logger.error('error uploading', error)
+    throw error
   }
 }
 
@@ -92,6 +97,11 @@ export const list = async (
   const { nextToken, bucket = defaultBucket, pageSize } = opt
   const prefix = await _prefix(opt)
   const finalPath = prefix + path
+  const s3 = new S3Client({
+    region,
+    credentials: session.credentials
+  })
+
   logger.debug('list ' + path + ' from ' + finalPath)
 
   const MAX_PAGE_SIZE = 1000
@@ -112,10 +122,6 @@ export const list = async (
   }
 
   try {
-    const s3 = new S3Client({
-      region,
-      credentials: session.credentials
-    })
     const response = await s3.send(new ListObjectsV2Command(params))
     if (response && response.Contents) {
       output.results = response.Contents.map(item => {
@@ -148,15 +154,15 @@ export const get = async (
   const { download, bucket = defaultBucket } = opt
   const prefix = await _prefix(opt)
   const finalKey = prefix + key
+  const s3 = new S3Client({
+    region,
+    credentials: session.credentials
+  })
 
   const params: GetObjectCommandInput = {
     Bucket: bucket,
     Key: finalKey
   }
-  const s3 = new S3Client({
-    region,
-    credentials: session.credentials
-  })
 
   if (download === true) {
     try {
@@ -186,6 +192,39 @@ export const get = async (
     return url
   } catch (error) {
     logger.error('Could not get a signed URL for', finalKey)
+    throw error
+  }
+}
+
+export const remove = async (
+  key: string,
+  config?: RemoveConfig
+): Promise<RemoveOutput> => {
+  const session = await getSession()
+  if (!session?.credentials) throw new Error('No credentials')
+  logger.debug('session', session)
+
+  const opt = Object.assign({}, config)
+  const { bucket = defaultBucket } = opt
+  const prefix = await _prefix(opt)
+  const finalKey = prefix + key
+  const s3 = new S3Client({
+    region,
+    credentials: session.credentials
+  })
+  logger.debug('remove ' + key + ' from ' + finalKey)
+
+  const params: DeleteObjectCommandInput = {
+    Bucket: bucket,
+    Key: finalKey
+  }
+
+  try {
+    const response = await s3.send(new DeleteObjectCommand(params))
+    logger.debug(`Deleted ${key} successfully`)
+    return response
+  } catch (error) {
+    logger.error(`Deletion of ${key} failed with ${error}`)
     throw error
   }
 }

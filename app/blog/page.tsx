@@ -4,7 +4,12 @@ import Button from '@mui/material/Button'
 import { useSession } from 'next-auth/react'
 
 import logger from '@/lib/logger'
-import { get, list, put, remove } from '@/lib/storage'
+import { Storage } from '@/lib/storage'
+
+Storage.configure({
+  region: process.env.NEXT_PUBLIC_AWS_S3_BUCKET_REGION!,
+  bucket: process.env.NEXT_PUBLIC_AWS_S3_BUCKET!
+})
 
 export default function Page() {
   const session = useSession()
@@ -15,7 +20,7 @@ export default function Page() {
       <div>
         <Button
           onClick={() => {
-            put('protected-s3.txt', 'aaa', { level: 'protected' })
+            Storage.put('protected-s3.txt', 'aaa', { level: 'protected' })
           }}
         >
           Protected Upload
@@ -24,7 +29,7 @@ export default function Page() {
       <div>
         <Button
           onClick={() => {
-            put('public-s3.txt', 'aaa', { level: 'public' })
+            Storage.put('public-s3.txt', 'aaa', { level: 'public' })
           }}
         >
           Public Upload
@@ -33,7 +38,9 @@ export default function Page() {
       <div>
         <Button
           onClick={() => {
-            put('private-s3.txt', 'My name is Harry.', { level: 'private' })
+            Storage.put('private-s3.txt', 'My name is Harry.', {
+              level: 'private'
+            })
           }}
         >
           Private Upload
@@ -42,7 +49,9 @@ export default function Page() {
       <div>
         <Button
           onClick={() => {
-            list('', { level: 'private' }).then(data => logger.info(data))
+            Storage.list('', { level: 'private' }).then(data =>
+              logger.info(data)
+            )
           }}
         >
           Private List
@@ -51,7 +60,7 @@ export default function Page() {
       <div>
         <Button
           onClick={() => {
-            list('').then(data => logger.info(data))
+            Storage.list('').then(data => logger.info(data))
           }}
         >
           Public List
@@ -60,9 +69,10 @@ export default function Page() {
       <div>
         <Button
           onClick={() => {
-            get('private-s3.txt', { level: 'private', download: false }).then(
-              url => logger.info(url)
-            )
+            Storage.get('private-s3.txt', {
+              level: 'private',
+              download: true
+            }).then(url => logger.info(url))
           }}
         >
           Get
@@ -71,7 +81,7 @@ export default function Page() {
       <div>
         <Button
           onClick={() => {
-            remove('private-s3.txt', { level: 'private' }).then(data =>
+            Storage.remove('private-s3.txt', { level: 'private' }).then(data =>
               logger.info(data)
             )
           }}

@@ -15,10 +15,11 @@ import { createRequest } from '@aws-sdk/util-create-request'
 import { formatUrl } from '@aws-sdk/util-format-url'
 import { getSession } from 'next-auth/react'
 
+import { Credentials } from '@/lib/credentials'
 import logger from '@/lib/logger'
-
+import { StorageErrorStrings } from './StorageErrorStrings'
 import {
-  CommonStorageOptions,
+  AccessLevel,
   GetConfig,
   GetOutput,
   ListConfig,
@@ -26,205 +27,239 @@ import {
   PutConfig,
   PutResult,
   RemoveConfig,
-  RemoveOutput
+  RemoveOutput,
+  StorageOptions
 } from './types'
 
-const region = process.env.NEXT_PUBLIC_AWS_S3_BUCKET_REGION!
-const defaultBucket = process.env.NEXT_PUBLIC_AWS_S3_BUCKET!
-
-const _prefix = async (config: CommonStorageOptions) => {
-  const { level } = config
-  if (level == 'private') {
-    const session = await getSession()
-    return 'private/' + session?.identityId + '/'
-  } else if (level == 'protected') {
-    const session = await getSession()
-    return 'protected/' + session?.identityId + '/'
-  } else {
-    return 'public/'
-  }
+type StorageConfig = Omit<StorageOptions, 'region' | 'bucket'> & {
+  region: string
+  bucket: string
 }
 
-export const put = async (
-  key: string,
-  object: PutObjectCommandInput['Body'],
-  config?: PutConfig
-): Promise<PutResult> => {
-  const session = await getSession()
-  if (!session?.credentials) throw new Error('No credentials')
+export class StorageClass {
+  /**
+   * @private
+   */
+  private _config: StorageOptions
 
-  const opt = Object.assign({}, config)
-  const { bucket = defaultBucket } = opt
-
-  const prefix = await _prefix(opt)
-  const finalKey = prefix + key
-  const type = config?.contentType ?? 'binary/octet-stream'
-  const s3 = new S3Client({
-    region,
-    credentials: session.credentials
-  })
-
-  logger.info('finalKey %s', finalKey)
-  const params: PutObjectCommandInput = {
-    Bucket: bucket,
-    Key: finalKey,
-    Body: object,
-    ContentType: type
+  constructor() {
+    this._config = {}
   }
 
-  try {
-    const response = await s3.send(new PutObjectCommand(params))
-    logger.debug('upload result', response)
-    logger.debug(`Upload success for ${key}`)
-    return {
-      key: finalKey
-    }
-  } catch (error) {
-    logger.error('error uploading', error)
-    throw error
-  }
-}
-
-export const list = async (
-  path: string,
-  config?: ListConfig
-): Promise<ListOutput> => {
-  const session = await getSession()
-  if (!session?.credentials) throw new Error('No credentials')
-  logger.debug('session', session)
-
-  const opt = Object.assign({}, config)
-  const { nextToken, bucket = defaultBucket, pageSize } = opt
-  const prefix = await _prefix(opt)
-  const finalPath = prefix + path
-  const s3 = new S3Client({
-    region,
-    credentials: session.credentials
-  })
-
-  logger.debug('list ' + path + ' from ' + finalPath)
-
-  const MAX_PAGE_SIZE = 1000
-  const params: ListObjectsV2Request = {
-    Bucket: bucket,
-    Prefix: finalPath,
-    MaxKeys: MAX_PAGE_SIZE,
-    ContinuationToken: nextToken
+  configure(config: StorageConfig) {
+    logger.debug('configure Storage')
+    this._config = Object.assign({}, this._config, config)
+    return this._config
   }
 
-  if (pageSize && typeof pageSize === 'number' && pageSize <= MAX_PAGE_SIZE) {
-    params.MaxKeys = pageSize
-  }
-
-  const output: ListOutput = {
-    results: [],
-    hasNextToken: false
-  }
-
-  try {
-    const response = await s3.send(new ListObjectsV2Command(params))
-    if (response && response.Contents) {
-      output.results = response.Contents.map(item => {
-        return {
-          key: item.Key?.substring(prefix.length),
-          eTag: item.ETag,
-          lastModified: item.LastModified,
-          size: item.Size
-        }
-      })
-      output.nextToken = response.NextContinuationToken
-      output.hasNextToken = response.IsTruncated ?? false
-    }
-    return output
-  } catch (err) {
-    logger.error('Failed to list items', err)
-    throw err
-  }
-}
-
-export const get = async (
-  key: string,
-  config?: GetConfig
-): Promise<GetOutput> => {
-  const session = await getSession()
-  if (!session?.credentials) throw new Error('No credentials')
-  logger.debug('session', session)
-
-  const opt = Object.assign({}, config)
-  const { download, bucket = defaultBucket } = opt
-  const prefix = await _prefix(opt)
-  const finalKey = prefix + key
-  const s3 = new S3Client({
-    region,
-    credentials: session.credentials
-  })
-
-  const params: GetObjectCommandInput = {
-    Bucket: bucket,
-    Key: finalKey
-  }
-
-  if (download === true) {
+  private async _ensureCredentials(): Promise<boolean> {
     try {
-      const response = await s3.send(new GetObjectCommand(params))
-      logger.info('Download success for', finalKey)
-      return response
+      const { credentials } = (await getSession()) ?? {}
+      if (!credentials) return false
+      logger.debug('set credentials for storage', credentials)
+      this._config.credentials = credentials
+      return true
     } catch (error) {
-      logger.error('Download failed with', error)
+      logger.warn('ensure credentials error', error)
+      return false
+    }
+  }
+
+  private async _prefix(config: {
+    credentials?: Credentials
+    level?: AccessLevel
+  }) {
+    const { credentials, level } = config
+    if (level == 'private') {
+      if (!credentials) throw new Error(StorageErrorStrings.NO_CREDENTIALS)
+      return `private/${credentials.identityId}/`
+    } else if (level == 'protected') {
+      if (!credentials) throw new Error(StorageErrorStrings.NO_CREDENTIALS)
+      return `protected/${credentials.identityId}/`
+    } else {
+      return 'public/'
+    }
+  }
+
+  private _createNewS3Client(): S3Client {
+    const { region, credentials } = this._config
+    const s3client = new S3Client({ region, credentials })
+    return s3client
+  }
+
+  public put = async (
+    key: string,
+    object: PutObjectCommandInput['Body'],
+    config?: PutConfig
+  ): Promise<PutResult> => {
+    const credentialsOK = await this._ensureCredentials()
+    if (!credentialsOK) throw new Error(StorageErrorStrings.NO_CREDENTIALS)
+
+    const opt = Object.assign({}, this._config, config)
+    const { bucket } = opt
+
+    const prefix = await this._prefix(opt)
+    const finalKey = prefix + key
+    const type = config?.contentType ?? 'binary/octet-stream'
+    const s3 = this._createNewS3Client()
+
+    logger.debug('finalKey %s', finalKey)
+    const params: PutObjectCommandInput = {
+      Bucket: bucket,
+      Key: finalKey,
+      Body: object,
+      ContentType: type
+    }
+
+    try {
+      const response = await s3.send(new PutObjectCommand(params))
+      logger.debug('upload result', response)
+      logger.debug(`Upload success for ${key}`)
+      return {
+        key: finalKey
+      }
+    } catch (error) {
+      logger.error('error uploading', error)
       throw error
     }
   }
 
-  try {
-    const signer = new S3RequestPresigner({
-      region,
-      credentials: session.credentials,
-      sha256: Sha256
-    })
+  public list = async (
+    path: string,
+    config?: ListConfig
+  ): Promise<ListOutput> => {
+    const credentialsOK = await this._ensureCredentials()
+    if (!credentialsOK) throw new Error(StorageErrorStrings.NO_CREDENTIALS)
 
-    const request = await createRequest(s3, new GetObjectCommand(params))
-    const url = formatUrl(
-      await signer.presign(request, {
-        expiresIn: 900
+    const opt = Object.assign({}, this._config, config)
+    const { bucket, nextToken, pageSize } = opt
+
+    const prefix = await this._prefix(opt)
+    const finalPath = prefix + path
+    const s3 = this._createNewS3Client()
+
+    logger.debug('list ' + path + ' from ' + finalPath)
+
+    const MAX_PAGE_SIZE = 1000
+    const params: ListObjectsV2Request = {
+      Bucket: bucket,
+      Prefix: finalPath,
+      MaxKeys: MAX_PAGE_SIZE,
+      ContinuationToken: nextToken
+    }
+
+    if (pageSize && typeof pageSize === 'number' && pageSize <= MAX_PAGE_SIZE) {
+      params.MaxKeys = pageSize
+    }
+
+    const output: ListOutput = {
+      results: [],
+      hasNextToken: false
+    }
+
+    try {
+      const response = await s3.send(new ListObjectsV2Command(params))
+      if (response && response.Contents) {
+        output.results = response.Contents.map(item => {
+          return {
+            key: item.Key?.substring(prefix.length),
+            eTag: item.ETag,
+            lastModified: item.LastModified,
+            size: item.Size
+          }
+        })
+        output.nextToken = response.NextContinuationToken
+        output.hasNextToken = response.IsTruncated ?? false
+      }
+      return output
+    } catch (error) {
+      logger.error('Failed to list items', error)
+      throw error
+    }
+  }
+
+  public async get<T extends GetConfig>(
+    key: string,
+    config?: T
+  ): Promise<GetOutput<T>> {
+    const credentialsOK = await this._ensureCredentials()
+    if (!credentialsOK) throw new Error(StorageErrorStrings.NO_CREDENTIALS)
+
+    const opt = Object.assign({}, this._config, config)
+    const { credentials, region, bucket, download } = opt
+
+    const prefix = await this._prefix(opt)
+    const finalKey = prefix + key
+    const s3 = this._createNewS3Client()
+
+    const params: GetObjectCommandInput = {
+      Bucket: bucket,
+      Key: finalKey
+    }
+
+    if (download === true) {
+      try {
+        const response = await s3.send(new GetObjectCommand(params))
+        logger.debug('Download success for', finalKey)
+        return response as GetOutput<T>
+      } catch (error) {
+        logger.error('Download failed with', error)
+        throw error
+      }
+    }
+
+    try {
+      if (!region) throw new Error(StorageErrorStrings.NO_REGION)
+      if (!credentials) throw new Error(StorageErrorStrings.NO_CREDENTIALS)
+      const signer = new S3RequestPresigner({
+        region,
+        credentials,
+        sha256: Sha256
       })
-    )
-    logger.info('getSignedUrl success. Signed URL:', url)
-    return url
-  } catch (error) {
-    logger.error('Could not get a signed URL for', finalKey)
-    throw error
+
+      const request = await createRequest(s3, new GetObjectCommand(params))
+      const url = formatUrl(
+        await signer.presign(request, {
+          expiresIn: 900
+        })
+      )
+      logger.debug('getSignedUrl success. Signed URL:', url)
+      return url as GetOutput<T>
+    } catch (error) {
+      logger.error('Could not get a signed URL for', finalKey)
+      throw error
+    }
+  }
+
+  public remove = async (
+    key: string,
+    config?: RemoveConfig
+  ): Promise<RemoveOutput> => {
+    const credentialsOK = await this._ensureCredentials()
+    if (!credentialsOK) throw new Error(StorageErrorStrings.NO_CREDENTIALS)
+
+    const opt = Object.assign({}, this._config, config)
+    const { bucket } = opt
+
+    const prefix = await this._prefix(opt)
+    const finalKey = prefix + key
+    const s3 = this._createNewS3Client()
+    logger.debug('remove ' + key + ' from ' + finalKey)
+
+    const params: DeleteObjectCommandInput = {
+      Bucket: bucket,
+      Key: finalKey
+    }
+
+    try {
+      const response = await s3.send(new DeleteObjectCommand(params))
+      logger.debug(`Deleted ${key} successfully`)
+      return response
+    } catch (error) {
+      logger.error(`Deletion of ${key} failed with ${error}`)
+      throw error
+    }
   }
 }
 
-export const remove = async (
-  key: string,
-  config?: RemoveConfig
-): Promise<RemoveOutput> => {
-  const session = await getSession()
-  if (!session?.credentials) throw new Error('No credentials')
-  logger.debug('session', session)
-
-  const opt = Object.assign({}, config)
-  const { bucket = defaultBucket } = opt
-  const prefix = await _prefix(opt)
-  const finalKey = prefix + key
-  const s3 = new S3Client({
-    region,
-    credentials: session.credentials
-  })
-  logger.debug('remove ' + key + ' from ' + finalKey)
-
-  const params: DeleteObjectCommandInput = {
-    Bucket: bucket,
-    Key: finalKey
-  }
-
-  try {
-    const response = await s3.send(new DeleteObjectCommand(params))
-    logger.debug(`Deleted ${key} successfully`)
-    return response
-  } catch (error) {
-    logger.error(`Deletion of ${key} failed with ${error}`)
-    throw error
-  }
-}
+export const Storage = new StorageClass()

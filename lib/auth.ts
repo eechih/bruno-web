@@ -72,32 +72,15 @@ export const authOptions: NextAuthOptions = {
     jwt: async function ({ token, account }) {
       if (account) {
         logger.debug('account', account)
-        const {
-          access_token: accessToken = '',
-          expires_at: expiresAt = 0, // Unix Timestamp (seconds)
-          refresh_token: refreshToken = '',
-          id_token: idToken = ''
-        } = account
-        const {
-          accessKeyId,
-          sessionToken,
-          secretAccessKey,
-          expiration,
-          identityId
-        } = await getCredentials(idToken)
-
-        token.accessToken = accessToken
-        token.accessTokenExpires = expiresAt * 1000
-        token.refreshToken = refreshToken
-        token.idToken = idToken
-        token.identityId = identityId
-        token.credentials = {
-          accessKeyId,
-          sessionToken,
-          secretAccessKey,
-          expiration
-        }
-
+        token.accessToken = account.access_token ?? ''
+        // `token.accessTokenExpires` is a Unix timestamp in milliseconds.
+        // `account.expires_at` is a Unix timestamp in seconds.
+        token.accessTokenExpires = account.expires_at
+          ? account.expires_at * 1000
+          : 0
+        token.refreshToken = account.refresh_token ?? ''
+        token.idToken = account.id_token ?? ''
+        token.credentials = await getCredentials(token.idToken)
         return token
       }
 
@@ -125,22 +108,7 @@ export const authOptions: NextAuthOptions = {
           if (refreshToken) token.refreshToken = refreshToken
           if (expiresIn)
             token.accessTokenExpires = Date.now() + expiresIn * 1000
-          if (idToken) {
-            const {
-              accessKeyId,
-              sessionToken,
-              secretAccessKey,
-              expiration,
-              identityId
-            } = await getCredentials(idToken)
-            token.identityId = identityId
-            token.credentials = {
-              accessKeyId,
-              sessionToken,
-              secretAccessKey,
-              expiration
-            }
-          }
+          if (idToken) token.credentials = await getCredentials(idToken)
         }
 
         return token
@@ -153,10 +121,9 @@ export const authOptions: NextAuthOptions = {
     session: async function ({ session, token }) {
       session.accessToken = token.accessToken
       session.accessTokenExpires = token.accessTokenExpires
-      session.identityId = token.identityId
-      session.credentials = token.credentials
       session.refreshToken = token.refreshToken
       session.idToken = token.idToken
+      session.credentials = token.credentials
       return session
     }
   }

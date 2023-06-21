@@ -3,7 +3,17 @@ import {
   GetObjectCommandOutput,
   _Object as ListObjectsCommandOutputContent
 } from '@aws-sdk/client-s3'
-type AccessLevel = 'private' | 'protected' | 'public'
+
+import { Credentials } from '@/lib/credentials'
+
+export type AccessLevel = 'private' | 'protected' | 'public'
+
+export type StorageOptions = {
+  credentials?: Credentials
+  region?: string
+  bucket?: string
+  level?: AccessLevel
+}
 
 export type CommonStorageOptions = {
   region?: string
@@ -41,7 +51,9 @@ export type GetConfig = CommonStorageOptions & {
   download?: boolean
 }
 
-export type GetOutput = GetObjectCommandOutput | string
+export type GetOutput<T> = T extends { download: true }
+  ? GetObjectCommandOutput
+  : string
 
 export type RemoveConfig = CommonStorageOptions & {}
 

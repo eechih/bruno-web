@@ -8,11 +8,12 @@ declare module 'next-auth' {
     accessTokenExpires: number // Unix Timestamp (milliseconds)
     refreshToken: string
     idToken: string
-    identityId: string
     credentials: {
       accessKeyId: string
       secretAccessKey: string
       sessionToken: string
+      identityId: string
+      authenticated: boolean
       expiration?: Date
     }
     error?: 'RefreshAccessTokenError'
@@ -25,11 +26,12 @@ declare module 'next-auth/jwt' {
     accessTokenExpires: number // Unix Timestamp (milliseconds)
     idToken: string
     refreshToken: string
-    identityId: string
     credentials: {
       accessKeyId: string
       secretAccessKey: string
       sessionToken: string
+      identityId: string
+      authenticated: boolean
       expiration?: Date
     }
     error?: 'RefreshAccessTokenError'

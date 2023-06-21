@@ -20,6 +20,7 @@ export interface Credentials {
   sessionToken: string
   secretAccessKey: string
   identityId: string
+  authenticated: boolean
   // Long term creds do not provide an expiration date
   expiration?: Date
 }
@@ -51,7 +52,7 @@ export const getCredentials = async (idToken: string): Promise<Credentials> => {
   }
   const command = new GetCredentialsForIdentityCommand(input)
   const response = await identityClient.send(command)
-  logger.info('response', response)
+  logger.debug('response', response)
   const { Credentials, IdentityId } = response
 
   if (!Credentials || !IdentityId) throw new Error('Failed to get credentials.')
@@ -61,6 +62,7 @@ export const getCredentials = async (idToken: string): Promise<Credentials> => {
     expiration: Credentials.Expiration,
     sessionToken: Credentials.SessionToken ?? '',
     secretAccessKey: Credentials.SecretKey ?? '',
+    authenticated: true,
     identityId: IdentityId
   }
 }

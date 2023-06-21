@@ -7,6 +7,7 @@ import { startTransition } from 'react'
 import { SubmitHandler, useFormContext } from 'react-hook-form'
 
 import useUpdateProduct from '@/hooks/useUpdateProduct'
+import logger from '@/lib/logger'
 import { toOffShelfAt } from '@/lib/utils'
 import { UpdateProductInput } from '@/models'
 import { ProductFormInputs } from './ProductForm'
@@ -46,7 +47,7 @@ export default function UpdateProductButton({
       })
       reset(data)
     } catch (error) {
-      console.log('Error', error)
+      logger.error('Error', error)
       setError('root.serverError', Object.assign({}, error, { type: 'server' }))
     }
   }

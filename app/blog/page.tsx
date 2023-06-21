@@ -1,54 +1,64 @@
 'use client'
 
-import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3'
 import Button from '@mui/material/Button'
 import { useSession } from 'next-auth/react'
 
-const BUCKET_NAME = 'bruno-bucket83908e77-1kbjojz6gr7ho'
-const REGION_NAME = 'us-east-1'
+import logger from '@/lib/logger'
+import { list, put } from '@/lib/storage'
 
 export default function Page() {
   const session = useSession()
-  console.log('session', session)
-
-  const {
-    identityId,
-    credentials: {
-      accessKeyId = '',
-      secretKey: secretAccessKey = '',
-      sessionToken
-    }
-  } = session.data ?? { credentials: {} }
-
-  const upload = async () => {
-    const client = new S3Client({
-      region: REGION_NAME,
-      credentials: {
-        accessKeyId,
-        secretAccessKey,
-        sessionToken
-      }
-    })
-
-    console.log('upload')
-    const command = new PutObjectCommand({
-      Bucket: BUCKET_NAME,
-      // Key: 'public/hello-s3.txt',
-      Key: `private/${identityId}/hello2-s3.txt`,
-      Body: 'Hello S3!'
-    })
-
-    try {
-      const response = await client.send(command)
-      console.log(response)
-    } catch (err) {
-      console.error(err)
-    }
-  }
+  logger.info('session', session)
   return (
     <>
       Blog
-      <Button onClick={upload}>Upload</Button>
+      <div>
+        <Button
+          onClick={() => {
+            put('protected-s3.txt', 'aaa', { level: 'protected' })
+          }}
+        >
+          Protected Upload
+        </Button>
+      </div>
+      <div>
+        <Button
+          onClick={() => {
+            put('public-s3.txt', 'aaa', { level: 'public' })
+          }}
+        >
+          Public Upload
+        </Button>
+      </div>
+      <div>
+        <Button
+          onClick={() => {
+            put('private-s3.txt', 'aaa', { level: 'private' })
+          }}
+        >
+          Private Upload
+        </Button>
+      </div>
+      <div>
+        <Button
+          onClick={() => {
+            list('', { level: 'private', pageSize: 2 }).then(data =>
+              logger.info(data)
+            )
+          }}
+        >
+          Private List
+        </Button>
+      </div>
+      <div>
+        <Button
+          onClick={() => {
+            list('').then(data => logger.info(data))
+          }}
+        >
+          Public List
+        </Button>
+      </div>
     </>
   )
 }

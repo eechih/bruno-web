@@ -3,13 +3,14 @@ import { getToken } from 'next-auth/jwt'
 import { NextRequest, NextResponse } from 'next/server'
 
 import { authOptions } from '@/lib/auth'
+import logger from '@/lib/logger'
 
 export async function GET(req: NextRequest) {
   const token = await getToken({ req })
-  console.log('GET token', token)
+  logger.log('GET token', token)
   if (token) {
     // Signed in
-    console.log('JSON Web Token', JSON.stringify(token, null, 2))
+    logger.log('JSON Web Token', JSON.stringify(token, null, 2))
   }
 
   const session = await getServerSession(authOptions)

@@ -1,6 +1,7 @@
-/* eslint-disable no-console */
 /* eslint-disable no-unused-vars */
 import { DocumentNode, GraphQLError } from 'graphql'
+
+import logger from '@/lib/logger'
 
 export enum GRAPHQL_AUTH_MODE {
   API_KEY = 'API_KEY',
@@ -48,7 +49,7 @@ export class GraphQLAPIClass {
 
   constructor(options: GraphQLAPIOptions) {
     this._options = options
-    console.debug('API Options', this._options)
+    logger.debug('API Options', this._options)
   }
 
   configure(options: GraphQLAPIOptions) {
@@ -159,7 +160,7 @@ export class GraphQLAPIClass {
       throw errors[0]
     }
 
-    console.log('result', result)
+    logger.debug('result', result)
     return result
   }
 }

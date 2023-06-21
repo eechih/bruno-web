@@ -1,15 +1,24 @@
+import { Sha256 } from '@aws-crypto/sha256-browser'
 import {
+  GetObjectCommand,
+  GetObjectCommandInput,
   ListObjectsV2Command,
   ListObjectsV2Request,
   PutObjectCommand,
   PutObjectCommandInput,
   S3Client
 } from '@aws-sdk/client-s3'
-import * as log from 'loglevel'
+import { S3RequestPresigner } from '@aws-sdk/s3-request-presigner'
+import { createRequest } from '@aws-sdk/util-create-request'
+import { formatUrl } from '@aws-sdk/util-format-url'
 import { getSession } from 'next-auth/react'
+
+import logger from '@/lib/logger'
 
 import {
   CommonStorageOptions,
+  GetConfig,
+  GetOutput,
   ListConfig,
   ListOutput,
   PutConfig,
@@ -47,7 +56,7 @@ export const put = async (
   const finalKey = prefix + key
   const type = config?.contentType ?? 'binary/octet-stream'
 
-  log.info('finalKey %s', finalKey)
+  logger.info('finalKey %s', finalKey)
   const params: PutObjectCommandInput = {
     Bucket: bucket,
     Key: finalKey,
@@ -61,12 +70,12 @@ export const put = async (
       credentials: session.credentials
     })
     const response = await s3.send(new PutObjectCommand(params))
-    log.info(response)
+    logger.debug(response)
     return {
       key: finalKey
     }
   } catch (err) {
-    log.error(err)
+    logger.error(err)
     throw err
   }
 }
@@ -77,13 +86,13 @@ export const list = async (
 ): Promise<ListOutput> => {
   const session = await getSession()
   if (!session?.credentials) throw new Error('No credentials')
-  log.info('session', session)
+  logger.debug('session', session)
 
   const opt = Object.assign({}, config)
   const { nextToken, bucket = defaultBucket, pageSize } = opt
   const prefix = await _prefix(opt)
   const finalPath = prefix + path
-  log.debug('list ' + path + ' from ' + finalPath)
+  logger.debug('list ' + path + ' from ' + finalPath)
 
   const MAX_PAGE_SIZE = 1000
   const params: ListObjectsV2Request = {
@@ -122,7 +131,61 @@ export const list = async (
     }
     return output
   } catch (err) {
-    log.error('Failed to list items', err)
+    logger.error('Failed to list items', err)
     throw err
+  }
+}
+
+export const get = async (
+  key: string,
+  config?: GetConfig
+): Promise<GetOutput> => {
+  const session = await getSession()
+  if (!session?.credentials) throw new Error('No credentials')
+  logger.debug('session', session)
+
+  const opt = Object.assign({}, config)
+  const { download, bucket = defaultBucket } = opt
+  const prefix = await _prefix(opt)
+  const finalKey = prefix + key
+
+  const params: GetObjectCommandInput = {
+    Bucket: bucket,
+    Key: finalKey
+  }
+  const s3 = new S3Client({
+    region,
+    credentials: session.credentials
+  })
+
+  if (download === true) {
+    try {
+      const response = await s3.send(new GetObjectCommand(params))
+      logger.info('Download success for', finalKey)
+      return response
+    } catch (error) {
+      logger.error('Download failed with', error)
+      throw error
+    }
+  }
+
+  try {
+    const signer = new S3RequestPresigner({
+      region,
+      credentials: session.credentials,
+      sha256: Sha256
+    })
+
+    const request = await createRequest(s3, new GetObjectCommand(params))
+    const url = formatUrl(
+      await signer.presign(request, {
+        expiresIn: 900
+      })
+    )
+    logger.info('getSignedUrl success. Signed URL:', url)
+    return url
+  } catch (error) {
+    logger.error('Could not get a signed URL for', finalKey)
+    throw error
   }
 }

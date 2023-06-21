@@ -1,4 +1,7 @@
-import { _Object as ListObjectsCommandOutputContent } from '@aws-sdk/client-s3'
+import {
+  GetObjectCommandOutput,
+  _Object as ListObjectsCommandOutputContent
+} from '@aws-sdk/client-s3'
 type AccessLevel = 'private' | 'protected' | 'public'
 
 export type CommonStorageOptions = {
@@ -32,3 +35,9 @@ export type ListOutput = {
   nextToken?: string
   hasNextToken: boolean
 }
+
+export type GetConfig = CommonStorageOptions & {
+  download?: boolean
+}
+
+export type GetOutput = GetObjectCommandOutput | string

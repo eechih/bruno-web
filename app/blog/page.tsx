@@ -4,7 +4,7 @@ import Button from '@mui/material/Button'
 import { useSession } from 'next-auth/react'
 
 import logger from '@/lib/logger'
-import { list, put } from '@/lib/storage'
+import { get, list, put } from '@/lib/storage'
 
 export default function Page() {
   const session = useSession()
@@ -33,7 +33,7 @@ export default function Page() {
       <div>
         <Button
           onClick={() => {
-            put('private-s3.txt', 'aaa', { level: 'private' })
+            put('private-s3.txt', 'My name is Harry.', { level: 'private' })
           }}
         >
           Private Upload
@@ -57,6 +57,17 @@ export default function Page() {
           }}
         >
           Public List
+        </Button>
+      </div>
+      <div>
+        <Button
+          onClick={() => {
+            get('private-s3.txt', { level: 'private', download: false }).then(
+              url => logger.info(url)
+            )
+          }}
+        >
+          Get
         </Button>
       </div>
     </>

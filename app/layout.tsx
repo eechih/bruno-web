@@ -1,6 +1,7 @@
 import { Inter } from 'next/font/google'
 
 import ResponsiveAppBar from '@/components/ResponsiveAppBar'
+import { Container } from '@/components/mui/material'
 import './globals.css'
 import { NextAuthProvider } from './providers'
 
@@ -21,7 +22,7 @@ export default function RootLayout({
       <body className={inter.className}>
         <NextAuthProvider>
           <ResponsiveAppBar />
-          {children}
+          <Container maxWidth="xl">{children}</Container>
         </NextAuthProvider>
       </body>
     </html>

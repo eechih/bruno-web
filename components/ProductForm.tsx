@@ -10,7 +10,6 @@ import Link from 'next/link'
 import { FormProvider, useForm } from 'react-hook-form'
 
 import CreateProductButton from '@/components/CreateProductButton'
-import ImageUploader from '@/components/ImageUploader'
 import UpdateProductButton from '@/components/UpdateProductButton'
 import { ErrorMessage, Input, Select } from '@/components/forms'
 import { providers } from '@/lib/constants'
@@ -141,10 +140,6 @@ export default function ProductForm({ initialValues }: ProductFormProps) {
         <Grid xs={12}>
           <Stack spacing={2}>
             <Typography variant="h6">產品圖片</Typography>
-            <ImageUploader
-              acceptedFileTypes={['image/*']}
-              accessLevel="public"
-            />
           </Stack>
         </Grid>
 

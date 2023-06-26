@@ -9,13 +9,11 @@ import Tooltip from '@mui/material/Tooltip'
 import NextImage from 'next/image'
 import { FormEvent, useState } from 'react'
 
+import awsExports from '@/aws-exports'
+import { Storage } from '@/lib/aws'
 import logger from '@/lib/logger'
-import { Storage } from '@/lib/storage'
 
-Storage.configure({
-  region: process.env.NEXT_PUBLIC_AWS_S3_BUCKET_REGION!,
-  bucket: process.env.NEXT_PUBLIC_AWS_S3_BUCKET!
-})
+Storage.configure(awsExports)
 
 export default function Page() {
   const [imageUrls, setImageUrls] = useState<string[]>([])

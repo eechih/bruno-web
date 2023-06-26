@@ -24,12 +24,15 @@ interface ListProductsOperation {
 }
 
 export async function listProducts(
-  nextToken?: string
+  nextToken?: string,
+  authToken?: string
 ): Promise<ProductConnection> {
+  console.log('listProducts', nextToken, authToken)
   const limit = 2
   const res = await graphql<ListProductsOperation>({
     query: listProductsQuery,
-    variables: { limit, nextToken }
+    variables: { limit, nextToken },
+    authToken: authToken
   })
   return res.data.listProducts
 }
@@ -43,10 +46,14 @@ interface GetProductOperation {
   }
 }
 
-export async function getProduct(id: string): Promise<Product> {
+export async function getProduct(
+  id: string,
+  authToken?: string
+): Promise<Product> {
   const res = await graphql<GetProductOperation>({
     query: getProductQuery,
-    variables: { id }
+    variables: { id },
+    authToken
   })
   return res.data.getProduct
 }
@@ -61,11 +68,13 @@ interface CreateProductOperation {
 }
 
 export async function createProduct(
-  input: CreateProductInput
+  input: CreateProductInput,
+  authToken?: string
 ): Promise<Product> {
   const res = await graphql<CreateProductOperation>({
     query: createProductMutation,
-    variables: { input }
+    variables: { input },
+    authToken
   })
   return res.data.createProduct
 }
@@ -80,11 +89,13 @@ interface UpdateProductOperation {
 }
 
 export async function updateProduct(
-  input: UpdateProductInput
+  input: UpdateProductInput,
+  authToken?: string
 ): Promise<Product> {
   const res = await graphql<UpdateProductOperation>({
     query: updateProductMutation,
-    variables: { input }
+    variables: { input },
+    authToken
   })
   return res.data.updateProduct
 }
@@ -99,11 +110,13 @@ interface DeleteProductOperation {
 }
 
 export async function deleteProduct(
-  input: DeleteProductInput
+  input: DeleteProductInput,
+  authToken?: string
 ): Promise<Product> {
   const res = await graphql<DeleteProductOperation>({
     query: deleteProductMutation,
-    variables: { input }
+    variables: { input },
+    authToken
   })
   return res.data.deleteProduct
 }

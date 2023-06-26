@@ -1,12 +1,7 @@
-import { getSession } from 'next-auth/react'
+import awsExports from '@/aws-exports'
+import { API, GRAPHQL_AUTH_MODE } from '@/lib/aws'
 
-import { GRAPHQL_AUTH_MODE, GraphQLAPIClass } from '@/lib/GraphQLAPI'
-
-const graphqlEndpoint = process.env.NEXT_PUBLIC_AWS_APPSYNC_GRAPHQL_ENDPOINT!
-
-export const api = new GraphQLAPIClass({
-  aws_appsync_graphqlEndpoint: graphqlEndpoint
-})
+API.configure(awsExports)
 
 type ExtractVariables<T> = T extends { variables: object }
   ? T['variables']
@@ -16,18 +11,20 @@ type ExtractData<T> = T extends { data: object } ? T['data'] : never
 
 export async function graphql<T>({
   query,
-  variables
+  variables,
+  authMode = GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS,
+  authToken
 }: {
   query: string
   variables?: ExtractVariables<T>
+  authMode?: keyof typeof GRAPHQL_AUTH_MODE
+  authToken?: string
 }): Promise<T | never> {
-  const session = await getSession()
-
-  const result = await api.graphql<ExtractData<T>>({
-    query: query,
-    variables: variables,
-    authMode: GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS,
-    authToken: session?.accessToken
+  const result = await API.graphql<ExtractData<T>>({
+    query,
+    variables,
+    authMode,
+    authToken
   })
 
   if (result.errors) {

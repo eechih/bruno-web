@@ -1,40 +1,16 @@
-import {
-  AuthFlowType,
-  AuthenticationResultType,
-  CognitoIdentityProviderClient,
-  InitiateAuthCommand
-} from '@aws-sdk/client-cognito-identity-provider'
 import type { NextAuthOptions } from 'next-auth'
 import CognitoProvider from 'next-auth/providers/cognito'
 import CredentialsProvider from 'next-auth/providers/credentials'
 
-import { getCredentials } from '@/lib/credentials'
+import awsExports from '@/aws-exports'
+import { Auth } from '@/lib/aws'
 import logger from '@/lib/logger'
 
-const region = process.env.AWS_REGION!
-const cognitoClientId = process.env.AWS_COGNITO_CLIENT_ID!
-const cognitoClientSecret = process.env.AWS_COGNITO_CLIENT_SECRET!
-const cognitoIssuer = process.env.AWS_COGNITO_ISSUER!
+const clientId = process.env.COGNITO_CLIENT_ID!
+const clientSecret = process.env.COGNITO_CLIENT_SECRET!
+const issuer = process.env.COGNITO_ISSUER!
 
-const identityProviderClient = new CognitoIdentityProviderClient({ region })
-
-const refreshCognitoAccessToken = async (
-  refreshToken: string
-): Promise<AuthenticationResultType> => {
-  logger.debug('refreshCognitoAccessToken...')
-  const command = new InitiateAuthCommand({
-    AuthFlow: AuthFlowType.REFRESH_TOKEN_AUTH,
-    ClientId: cognitoClientId,
-    AuthParameters: {
-      REFRESH_TOKEN: refreshToken,
-      SECRET_HASH: cognitoClientSecret
-    }
-  })
-  const response = await identityProviderClient.send(command)
-  if (!response.AuthenticationResult)
-    throw new Error('Failed to refresh cognito access token.')
-  return response.AuthenticationResult
-}
+Auth.configure(awsExports)
 
 export const authOptions: NextAuthOptions = {
   session: {
@@ -42,9 +18,9 @@ export const authOptions: NextAuthOptions = {
   },
   providers: [
     CognitoProvider({
-      clientId: cognitoClientId,
-      clientSecret: cognitoClientSecret,
-      issuer: cognitoIssuer,
+      clientId: clientId,
+      clientSecret: clientSecret,
+      issuer: issuer,
       authorization: {
         params: { scope: 'openid email profile aws.cognito.signin.user.admin' }
       }
@@ -66,7 +42,7 @@ export const authOptions: NextAuthOptions = {
       }
     })
   ],
-  debug: true,
+  // debug: true,
 
   callbacks: {
     jwt: async function ({ token, account }) {
@@ -80,7 +56,7 @@ export const authOptions: NextAuthOptions = {
           : 0
         token.refreshToken = account.refresh_token ?? ''
         token.idToken = account.id_token ?? ''
-        token.credentials = await getCredentials(token.idToken)
+        token.credentials = await Auth.getCredentials(token.idToken)
         return token
       }
 
@@ -90,7 +66,7 @@ export const authOptions: NextAuthOptions = {
 
       // If the access token has expired, try to refresh it
       try {
-        const refreshedTokens = await refreshCognitoAccessToken(
+        const refreshedTokens = await Auth.refreshCognitoAccessToken(
           token.refreshToken
         )
 
@@ -108,7 +84,7 @@ export const authOptions: NextAuthOptions = {
           if (refreshToken) token.refreshToken = refreshToken
           if (expiresIn)
             token.accessTokenExpires = Date.now() + expiresIn * 1000
-          if (idToken) token.credentials = await getCredentials(idToken)
+          if (idToken) token.credentials = await Auth.getCredentials(idToken)
         }
 
         return token

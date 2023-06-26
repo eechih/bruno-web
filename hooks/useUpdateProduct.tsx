@@ -1,3 +1,4 @@
+import { useSession } from 'next-auth/react'
 import useSWRMutation, {
   MutationFetcher,
   SWRMutationConfiguration
@@ -9,11 +10,15 @@ import { Product, UpdateProductInput } from '@/models'
 type Data = Product
 type Error = any
 type ExtraArg = { input: UpdateProductInput }
-type Key = string[]
+type Key = {
+  name: string
+  productId: string
+  accessToken?: string
+}
 type SWRData = Product
 
 const fetcher: MutationFetcher<Data, ExtraArg, Key> = async (key, options) => {
-  return updateProduct(options.arg.input)
+  return updateProduct(options.arg.input, key.accessToken)
 }
 
 const options: SWRMutationConfiguration<Data, Error, ExtraArg, Key, SWRData> = {
@@ -25,7 +30,12 @@ const options: SWRMutationConfiguration<Data, Error, ExtraArg, Key, SWRData> = {
 }
 
 export default function useUpdateProduct(id: string) {
-  const key = ['product', id]
+  const session = useSession()
+  const key = {
+    name: 'product',
+    productId: id,
+    accessToken: session.data?.accessToken
+  }
   const { trigger, isMutating } = useSWRMutation(key, fetcher, options)
   return {
     updateProduct: trigger,

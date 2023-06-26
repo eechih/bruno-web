@@ -4,15 +4,15 @@ import {
   _Object as ListObjectsCommandOutputContent
 } from '@aws-sdk/client-s3'
 
-import { Credentials } from '@/lib/credentials'
+import { ICredentials } from '@/lib/aws'
 
 export type AccessLevel = 'private' | 'protected' | 'public'
 
 export type StorageOptions = {
-  credentials?: Credentials
+  credentials?: ICredentials
   region?: string
-  bucket?: string
   level?: AccessLevel
+  bucket?: string
 }
 
 export type CommonStorageOptions = {

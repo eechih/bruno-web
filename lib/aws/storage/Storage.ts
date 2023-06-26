@@ -15,7 +15,7 @@ import { createRequest } from '@aws-sdk/util-create-request'
 import { formatUrl } from '@aws-sdk/util-format-url'
 import { getSession } from 'next-auth/react'
 
-import { Credentials } from '@/lib/credentials'
+import { ICredentials, parseAWSExports } from '@/lib/aws/core'
 import logger from '@/lib/logger'
 import { StorageErrorStrings } from './StorageErrorStrings'
 import {
@@ -31,24 +31,25 @@ import {
   StorageOptions
 } from './types'
 
-type StorageConfig = Omit<StorageOptions, 'region' | 'bucket'> & {
-  region: string
-  bucket: string
-}
-
 export class StorageClass {
   /**
    * @private
    */
   private _config: StorageOptions
 
-  constructor() {
-    this._config = {}
+  constructor(config?: StorageOptions) {
+    this._config = config || {}
+    logger.debug('Storage Options', this._config)
   }
 
-  configure(config: StorageConfig) {
+  configure(config?: any): StorageOptions {
     logger.debug('configure Storage')
-    this._config = Object.assign({}, this._config, config)
+    if (!config) return this._config
+    const awsConfig = parseAWSExports(config)
+    this._config = Object.assign({}, this._config, awsConfig.Storage)
+    if (!this._config.bucket) {
+      logger.debug('Do not have bucket yet')
+    }
     return this._config
   }
 
@@ -66,7 +67,7 @@ export class StorageClass {
   }
 
   private async _prefix(config: {
-    credentials?: Credentials
+    credentials?: ICredentials
     level?: AccessLevel
   }) {
     const { credentials, level } = config

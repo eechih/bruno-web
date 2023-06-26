@@ -6,6 +6,7 @@ export const createProductMutation = /* GraphQL */ `
       description
       price
       cost
+      images
       provider
       offShelfAt
     }
@@ -20,6 +21,7 @@ export const updateProductMutation = /* GraphQL */ `
       description
       price
       cost
+      images
       provider
       offShelfAt
     }
@@ -34,6 +36,7 @@ export const deleteProductMutation = /* GraphQL */ `
       description
       price
       cost
+      images
       provider
       offShelfAt
     }

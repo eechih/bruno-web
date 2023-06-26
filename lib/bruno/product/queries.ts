@@ -16,6 +16,7 @@ export const getProductQuery = /* GraphQL */ `
       name
       price
       cost
+      images
       provider
       offShelfAt
       description

@@ -11,6 +11,7 @@ export interface Product {
   provider?: string
   offShelfAt?: string
   description?: string
+  images?: string[]
 }
 
 export type CreateProductInput = Omit<Product, 'id'>

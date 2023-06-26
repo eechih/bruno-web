@@ -183,6 +183,7 @@ export class StorageClass {
     key: string,
     config?: T
   ): Promise<GetOutput<T>> {
+    logger.debug('Storage.get', key)
     const credentialsOK = await this._ensureCredentials()
     if (!credentialsOK) throw new Error(StorageErrorStrings.NO_CREDENTIALS)
 

@@ -6,6 +6,7 @@ import { startTransition } from 'react'
 import { SubmitHandler, useFormContext } from 'react-hook-form'
 
 import useCreateProduct from '@/hooks/useCreateProduct'
+import { Storage } from '@/lib/aws'
 import { toOffShelfAt } from '@/lib/utils'
 import { CreateProductInput } from '@/models'
 import { ProductFormInputs } from './ProductForm'
@@ -21,12 +22,28 @@ export default function CreateProductButton(props: CreateProductButtonProps) {
   const router = useRouter()
 
   const onSubmit: SubmitHandler<ProductFormInputs> = async data => {
+    const images = await Promise.all(
+      data.images.map(async image => {
+        const { key, preview } = image
+        if (preview) {
+          const imageBuffer = Buffer.from(preview.split(',')[1], 'base64')
+          await Storage.put(image.key, imageBuffer, {
+            level: 'private'
+          })
+          return key
+        }
+        return ''
+      })
+    )
+    console.log('images', images)
+
     try {
       const input: CreateProductInput = {
         name: data.name,
         price: Number(data.price),
         cost: Number(data.cost),
         description: data.description,
+        images: images,
         provider: data.provider,
         offShelfAt: toOffShelfAt(data.offShelfDate, data.offShelfTime)
       }

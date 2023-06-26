@@ -31,6 +31,10 @@ export default function Page() {
           setImageUrls(prevState => [...prevState, imageUrl])
         }
 
+        Storage.put(file.name, file, {
+          level: 'private'
+        })
+
         reader.readAsDataURL(file)
       })
     }

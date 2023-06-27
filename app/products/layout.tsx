@@ -1,17 +1,15 @@
 'use client'
 
 import Container from '@mui/material/Container'
-import { useTheme } from '@mui/material/styles'
-import useMediaQuery from '@mui/material/useMediaQuery'
 
+import { useScreen } from '@/hooks/useMediaQuery'
 import { ReactChildren } from '@/lib/types'
 
 export default function Layout({ children }: ReactChildren) {
-  const theme = useTheme()
-  const matches = useMediaQuery(theme.breakpoints.only('xs'))
+  const { isMobile } = useScreen()
 
   return (
-    <Container maxWidth="xl" disableGutters={matches}>
+    <Container maxWidth="xl" disableGutters={isMobile}>
       {children}
     </Container>
   )

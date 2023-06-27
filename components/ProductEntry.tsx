@@ -8,16 +8,14 @@ import CardMedia from '@mui/material/CardMedia'
 import Skeleton from '@mui/material/Skeleton'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import { useTheme } from '@mui/material/styles'
-import useMediaQuery from '@mui/material/useMediaQuery'
 
 import DeleteProductButton from '@/components/DeleteProductButton'
 import useGetProduct from '@/hooks/useGetProduct'
+import { useScreen } from '@/hooks/useMediaQuery'
 
 export default function ProductEntry({ id }: { id: string }) {
   const { product, productLoading } = useGetProduct(id)
-  const theme = useTheme()
-  const matches = useMediaQuery(theme.breakpoints.only('xs'))
+  const { isMobile } = useScreen()
 
   return (
     <div>
@@ -36,7 +34,7 @@ export default function ProductEntry({ id }: { id: string }) {
         </Stack>
       )}
       {product && (
-        <Card id={product.id} sx={{ borderRadius: matches ? 0 : 1 }}>
+        <Card id={product.id} sx={{ borderRadius: isMobile ? 0 : 1 }}>
           <CardMedia
             component="img"
             alt="green iguana"

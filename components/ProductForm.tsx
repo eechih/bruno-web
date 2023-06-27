@@ -11,19 +11,17 @@ import ImageListItemBar from '@mui/material/ImageListItemBar'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import Grid from '@mui/material/Unstable_Grid2'
-import { useTheme } from '@mui/material/styles'
-import useMediaQuery from '@mui/material/useMediaQuery'
 import moment from 'moment'
 import NextImage from 'next/image'
 import Link from 'next/link'
 import { FormEvent, useEffect } from 'react'
 import { FormProvider, useFieldArray, useForm } from 'react-hook-form'
-import { useWindowSize } from 'react-use'
 
 import awsExports from '@/aws-exports'
 import CreateProductButton from '@/components/CreateProductButton'
 import UpdateProductButton from '@/components/UpdateProductButton'
 import { ErrorMessage, Input, Select } from '@/components/forms'
+import { useScreen } from '@/hooks/useMediaQuery'
 import { Storage } from '@/lib/aws'
 import { providers } from '@/lib/constants'
 
@@ -65,10 +63,7 @@ export default function ProductForm({ initialValues }: ProductFormProps) {
   const { control, formState, watch } = methods
   const productId = initialValues?.id
   const watchAllFields = watch()
-  const theme = useTheme()
-  const isMobile = useMediaQuery(theme.breakpoints.only('xs'))
-  const { width } = useWindowSize()
-  const screenWidth = isMobile ? width : width
+  const { isMobile, screenWidth } = useScreen()
   const variant = isMobile ? 'filled' : 'outlined'
 
   const {
@@ -205,7 +200,6 @@ export default function ProductForm({ initialValues }: ProductFormProps) {
             />
           </Stack>
         </Grid>
-
         <Grid xs={12}>
           <Stack spacing={0}>
             <Typography variant="h6">產品圖片{screenWidth}</Typography>

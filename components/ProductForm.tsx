@@ -11,11 +11,14 @@ import ImageListItemBar from '@mui/material/ImageListItemBar'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import Grid from '@mui/material/Unstable_Grid2'
+import { useTheme } from '@mui/material/styles'
+import useMediaQuery from '@mui/material/useMediaQuery'
 import moment from 'moment'
 import NextImage from 'next/image'
 import Link from 'next/link'
 import { FormEvent, useEffect } from 'react'
 import { FormProvider, useFieldArray, useForm } from 'react-hook-form'
+import { useWindowSize } from 'react-use'
 
 import awsExports from '@/aws-exports'
 import CreateProductButton from '@/components/CreateProductButton'
@@ -62,6 +65,11 @@ export default function ProductForm({ initialValues }: ProductFormProps) {
   const { control, formState, watch } = methods
   const productId = initialValues?.id
   const watchAllFields = watch()
+  const theme = useTheme()
+  const isMobile = useMediaQuery(theme.breakpoints.only('xs'))
+  const { width } = useWindowSize()
+  const screenWidth = isMobile ? width : width
+  const variant = isMobile ? 'filled' : 'outlined'
 
   const {
     fields: images,
@@ -105,7 +113,7 @@ export default function ProductForm({ initialValues }: ProductFormProps) {
 
   return (
     <FormProvider {...methods}>
-      <Grid container spacing={2}>
+      <Grid container spacing={isMobile ? 0 : 2}>
         <Grid xs={12} md={6}>
           <Stack spacing={2}>
             <Typography variant="h6">基本設定</Typography>
@@ -118,6 +126,7 @@ export default function ProductForm({ initialValues }: ProductFormProps) {
               required
               fullWidth
               autoFocus={!initialValues}
+              variant={variant}
             />
             <Input
               name="price"
@@ -130,6 +139,7 @@ export default function ProductForm({ initialValues }: ProductFormProps) {
               type="number"
               required
               fullWidth
+              variant={variant}
             />
             <Input
               name="option"
@@ -138,6 +148,7 @@ export default function ProductForm({ initialValues }: ProductFormProps) {
               type="txt"
               fullWidth
               helperText="'範例：紅，黑，白 / XL，L，M'"
+              variant={variant}
             />
             <Select
               name="provider"
@@ -145,6 +156,7 @@ export default function ProductForm({ initialValues }: ProductFormProps) {
               label="供應商"
               options={providers}
               fullWidth
+              variant={variant}
             />
             <Input
               name="cost"
@@ -155,6 +167,7 @@ export default function ProductForm({ initialValues }: ProductFormProps) {
               label="成本"
               type="number"
               fullWidth
+              variant={variant}
             />
             <Stack direction="row" spacing={2}>
               <Input
@@ -163,6 +176,7 @@ export default function ProductForm({ initialValues }: ProductFormProps) {
                 label="下架日期"
                 type="date"
                 fullWidth
+                variant={variant}
               />
               <Input
                 name="offShelfTime"
@@ -170,6 +184,7 @@ export default function ProductForm({ initialValues }: ProductFormProps) {
                 label="下架時間"
                 type="time"
                 fullWidth
+                variant={variant}
               />
             </Stack>
           </Stack>
@@ -186,14 +201,20 @@ export default function ProductForm({ initialValues }: ProductFormProps) {
               fullWidth
               minRows={15}
               multiline
+              variant={variant}
             />
           </Stack>
         </Grid>
 
         <Grid xs={12}>
-          <Stack spacing={2}>
-            <Typography variant="h6">產品圖片</Typography>
-            <ImageList sx={{ width: 600 }} cols={3} rowHeight={200}>
+          <Stack spacing={0}>
+            <Typography variant="h6">產品圖片{screenWidth}</Typography>
+            <ImageList
+              sx={{ maxWidth: isMobile ? screenWidth : 600 }}
+              cols={isMobile ? 2 : 3}
+              rowHeight={isMobile ? screenWidth / 2 : 200}
+              gap={isMobile ? 0 : 4}
+            >
               {images &&
                 images.map((image, index) => {
                   return (
@@ -235,8 +256,8 @@ export default function ProductForm({ initialValues }: ProductFormProps) {
                   sx={{
                     border: '1px dashed grey',
                     borderRadius: 0,
-                    height: 200,
-                    width: 200
+                    height: isMobile ? screenWidth / 2 : 200,
+                    width: isMobile ? screenWidth / 2 : 200
                   }}
                 >
                   上傳圖片
@@ -273,7 +294,7 @@ export default function ProductForm({ initialValues }: ProductFormProps) {
             <ErrorMessage error={formState.errors.root} />
           )}
         </Grid>
-        <pre>{JSON.stringify(watchAllFields, null, 2)}</pre>
+        {!isMobile && <pre>{JSON.stringify(watchAllFields, null, 2)}</pre>}
       </Grid>
     </FormProvider>
   )

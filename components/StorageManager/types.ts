@@ -44,4 +44,6 @@ export interface StorageManagerProps {
   onUploadStart?: (event: { key?: string }) => void
   processFile?: ProcessFile
   showThumbnails?: boolean
+  dialogEnabled?: boolean
+  dialogFullScreen?: boolean
 }

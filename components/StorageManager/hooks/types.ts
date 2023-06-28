@@ -18,6 +18,7 @@ export type UseUploadFilesProps = Pick<
   StorageManagerProps,
   | 'accessLevel'
   | 'maxFileCount'
+  | 'onFileRemove'
   | 'onUploadStart'
   | 'onUploadSuccess'
   | 'onUploadError'

@@ -1,24 +1,22 @@
 'use client'
 
 import { Product } from '@/models'
-import DeleteIcon from '@mui/icons-material/Delete'
-import PhotoCameraIcon from '@mui/icons-material/PhotoCamera'
 import Button from '@mui/material/Button'
-import IconButton from '@mui/material/IconButton'
-import ImageList from '@mui/material/ImageList'
-import ImageListItem from '@mui/material/ImageListItem'
-import ImageListItemBar from '@mui/material/ImageListItemBar'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import Grid from '@mui/material/Unstable_Grid2'
 import moment from 'moment'
-import NextImage from 'next/image'
 import Link from 'next/link'
-import { FormEvent, useEffect } from 'react'
-import { FormProvider, useFieldArray, useForm } from 'react-hook-form'
+import {
+  DefaultValues,
+  FormProvider,
+  useFieldArray,
+  useForm
+} from 'react-hook-form'
 
 import awsExports from '@/aws-exports'
 import CreateProductButton from '@/components/CreateProductButton'
+import S3ImageList from '@/components/S3ImageList'
 import { StorageManager } from '@/components/StorageManager'
 import UpdateProductButton from '@/components/UpdateProductButton'
 import { ErrorMessage, Input, Select } from '@/components/forms'
@@ -38,10 +36,10 @@ export type ProductFormInputs = {
   offShelfTime: string
   description: string
   option: string
-  images: { key: string; preview?: string; src?: string }[]
+  images: { key: string }[]
 }
 
-const defaultValues: ProductFormInputs = {
+const defaultValues: DefaultValues<ProductFormInputs> = {
   name: '',
   price: '',
   cost: '',
@@ -54,7 +52,7 @@ const defaultValues: ProductFormInputs = {
 }
 
 export type ProductFormProps = {
-  initialValues?: ProductFormInputs
+  initialValues?: DefaultValues<ProductFormInputs>
 }
 
 export default function ProductForm({ initialValues }: ProductFormProps) {
@@ -62,6 +60,7 @@ export default function ProductForm({ initialValues }: ProductFormProps) {
     defaultValues: initialValues ?? defaultValues
   })
   const { control, formState, watch } = methods
+  const { dirtyFields } = formState
   const productId = initialValues?.id
   const watchAllFields = watch()
   const { isMobile, screenWidth } = useScreen()
@@ -70,42 +69,11 @@ export default function ProductForm({ initialValues }: ProductFormProps) {
   const {
     fields: images,
     append: appendImage,
-    remove: removeImage,
-    update: updateImage
+    remove: removeImage
   } = useFieldArray({
     control,
     name: 'images'
   })
-
-  useEffect(() => {
-    images.forEach(async (image, index) => {
-      const { key, preview, src } = image
-      if (!preview && !src) {
-        Storage.get(key, {
-          level: 'private'
-        }).then(url => {
-          updateImage(index, { ...image, src: url })
-        })
-      }
-    })
-  }, [images, updateImage])
-
-  const handleFileUpload = (event: FormEvent<HTMLInputElement>) => {
-    const { files } = event.target as HTMLInputElement
-    if (files) {
-      Array.from(files).forEach(file => {
-        const reader = new FileReader()
-
-        console.log('file', file)
-        reader.onloadend = () => {
-          const imageBase64 = reader.result as string
-          appendImage({ key: file.name, preview: imageBase64 })
-        }
-
-        reader.readAsDataURL(file)
-      })
-    }
-  }
 
   return (
     <FormProvider {...methods}>
@@ -204,69 +172,29 @@ export default function ProductForm({ initialValues }: ProductFormProps) {
         <Grid xs={12}>
           <Stack spacing={0}>
             <Typography variant="h6">產品圖片{screenWidth}</Typography>
-            <StorageManager maxFileCount={10} accessLevel="private" />
-            <ImageList
-              sx={{ maxWidth: isMobile ? screenWidth : 600 }}
-              cols={isMobile ? 2 : 3}
-              rowHeight={isMobile ? screenWidth / 2 : 200}
-              gap={isMobile ? 0 : 4}
-            >
-              {images &&
-                images.map((image, index) => {
-                  return (
-                    <ImageListItem key={index}>
-                      <NextImage
-                        src={image.src || image.preview || ''}
-                        alt="photo"
-                        fill
-                        priority
-                        style={{ objectFit: 'contain' }}
-                      />
-                      <ImageListItemBar
-                        sx={{
-                          background:
-                            'linear-gradient(to bottom, rgba(0,0,0,0.7) 0%, ' +
-                            'rgba(0,0,0,0.3) 70%, rgba(0,0,0,0) 100%)'
-                        }}
-                        position="top"
-                        actionIcon={
-                          <IconButton
-                            sx={{ color: 'white' }}
-                            aria-label={`delete ${image.key}`}
-                            onClick={() => removeImage(index)}
-                          >
-                            <DeleteIcon />
-                          </IconButton>
-                        }
-                        actionPosition="right"
-                      />
-                    </ImageListItem>
-                  )
-                })}
-              <ImageListItem>
-                <Button
-                  color="inherit"
-                  component="label"
-                  size="large"
-                  startIcon={<PhotoCameraIcon />}
-                  sx={{
-                    border: '1px dashed grey',
-                    borderRadius: 0,
-                    height: isMobile ? screenWidth / 2 : 200,
-                    width: isMobile ? screenWidth / 2 : 200
-                  }}
-                >
-                  上傳圖片
-                  <input
-                    hidden
-                    accept="image/*"
-                    multiple
-                    type="file"
-                    onChange={handleFileUpload}
-                  />
-                </Button>
-              </ImageListItem>
-            </ImageList>
+            <StorageManager
+              accessLevel="private"
+              maxFileCount={10}
+              onUploadSuccess={({ key }) => {
+                console.log('file uploaded', key)
+                if (key) appendImage({ key })
+              }}
+              onFileRemove={({ key }) => {
+                const index = images.findIndex(image => image.key == key)
+                console.log('removeImage', index)
+                removeImage(index)
+              }}
+              dialogEnabled
+              dialogFullScreen={isMobile}
+            />
+            <S3ImageList
+              keys={images.map(image => image.key)}
+              onRemoveImage={({ key }) => {
+                const index = images.findIndex(image => image.key == key)
+                console.log('removeImage', index)
+                removeImage(index)
+              }}
+            />
           </Stack>
         </Grid>
 
@@ -291,6 +219,7 @@ export default function ProductForm({ initialValues }: ProductFormProps) {
           )}
         </Grid>
         {!isMobile && <pre>{JSON.stringify(watchAllFields, null, 2)}</pre>}
+        <pre>{JSON.stringify(dirtyFields, null, 2)}</pre>
       </Grid>
     </FormProvider>
   )

@@ -1,14 +1,13 @@
 /* eslint-disable no-unused-vars */
 
-import DeleteIcon from '@mui/icons-material/Delete'
+import ClearIcon from '@mui/icons-material/Clear'
+import Card from '@mui/material/Card'
+import CardHeader from '@mui/material/CardHeader'
 import IconButton from '@mui/material/IconButton'
-import ImageList from '@mui/material/ImageList'
-import ImageListItem from '@mui/material/ImageListItem'
-import ImageListItemBar from '@mui/material/ImageListItemBar'
+import Grid from '@mui/material/Unstable_Grid2'
 import NextImage from 'next/image'
 
-import { useScreen } from '@/hooks/useMediaQuery'
-import { StorageFile } from '../types'
+import { FileStatus, StorageFile } from '../types'
 
 export interface FileListProps {
   files: StorageFile[]
@@ -16,47 +15,49 @@ export interface FileListProps {
 }
 
 export function FileList({ files, onDeleteFile }: FileListProps) {
-  const { screenWidth, isMobile } = useScreen()
   return (
-    <ImageList
-      sx={{ maxWidth: isMobile ? screenWidth : 600 }}
-      cols={isMobile ? 2 : 3}
-      rowHeight={isMobile ? screenWidth / 2 : 200}
-      gap={isMobile ? 0 : 4}
-    >
-      {files.map(storageFile => {
-        const { id, file } = storageFile
+    <Grid container spacing={2}>
+      {files.map((storageFile, index) => {
+        const { id, file, status } = storageFile
         const thumbnailUrl = file ? URL.createObjectURL(file) : ''
+        let subheader = ''
+        if (status == FileStatus.UPLOADING) subheader = '上傳中...'
+        else if (status === FileStatus.UPLOADED) subheader = '已上傳'
+
         return (
-          <ImageListItem key={id}>
-            <NextImage
-              src={thumbnailUrl}
-              alt={id}
-              fill
-              priority
-              style={{ objectFit: 'contain' }}
-            />
-            <ImageListItemBar
-              sx={{
-                background:
-                  'linear-gradient(to bottom, rgba(0,0,0,0.7) 0%, ' +
-                  'rgba(0,0,0,0.3) 70%, rgba(0,0,0,0) 100%)'
-              }}
-              position="top"
-              actionIcon={
-                <IconButton
-                  sx={{ color: 'white' }}
-                  aria-label={`delete ${id}`}
-                  onClick={() => onDeleteFile({ id })}
-                >
-                  <DeleteIcon />
-                </IconButton>
-              }
-              actionPosition="right"
-            />
-          </ImageListItem>
+          <Grid xs={12} key={index}>
+            <Card>
+              <CardHeader
+                avatar={
+                  <NextImage
+                    src={thumbnailUrl}
+                    alt="image"
+                    priority
+                    style={{ objectFit: 'cover' }}
+                    width={48}
+                    height={32}
+                  />
+                }
+                action={
+                  <IconButton
+                    aria-label="settings"
+                    onClick={() => onDeleteFile({ id })}
+                  >
+                    <ClearIcon />
+                  </IconButton>
+                }
+                title={id}
+                subheader={
+                  status === FileStatus.UPLOADED ? '✔ 已上傳' : '上傳中...'
+                }
+                subheaderTypographyProps={{
+                  color: status === FileStatus.UPLOADED ? '#4caf50' : 'inherit'
+                }}
+              />
+            </Card>
+          </Grid>
         )
       })}
-    </ImageList>
+    </Grid>
   )
 }

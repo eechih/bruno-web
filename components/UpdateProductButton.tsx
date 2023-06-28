@@ -33,10 +33,13 @@ export default function UpdateProductButton({
       if (dirtyFields.price) input.price = Number(data.price)
       if (dirtyFields.cost) input.cost = Number(data.cost)
       if (dirtyFields.description) input.description = data.description
+      if (dirtyFields.images?.some(image => image.key))
+        input.images = data.images.map(image => image.key)
       if (dirtyFields.provider) input.provider = data.provider
       if (dirtyFields.offShelfDate || dirtyFields.offShelfTime)
         input.offShelfAt = toOffShelfAt(data.offShelfDate, data.offShelfTime)
 
+      console.log('updateProduct', input)
       await updateProduct({ input })
       enqueueSnackbar('儲存成功', {
         variant: 'success',

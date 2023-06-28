@@ -8,6 +8,11 @@ const nextConfig = {
         hostname:
           'bruno-bucket83908e77-1kbjojz6gr7ho.s3.us-east-1.amazonaws.com',
         pathname: '**'
+      },
+      {
+        protocol: 'https',
+        hostname: 'images.unsplash.com',
+        pathname: '**'
       }
     ]
   }

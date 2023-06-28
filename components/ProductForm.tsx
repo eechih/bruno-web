@@ -19,6 +19,7 @@ import { FormProvider, useFieldArray, useForm } from 'react-hook-form'
 
 import awsExports from '@/aws-exports'
 import CreateProductButton from '@/components/CreateProductButton'
+import { StorageManager } from '@/components/StorageManager'
 import UpdateProductButton from '@/components/UpdateProductButton'
 import { ErrorMessage, Input, Select } from '@/components/forms'
 import { useScreen } from '@/hooks/useMediaQuery'
@@ -203,6 +204,7 @@ export default function ProductForm({ initialValues }: ProductFormProps) {
         <Grid xs={12}>
           <Stack spacing={0}>
             <Typography variant="h6">產品圖片{screenWidth}</Typography>
+            <StorageManager maxFileCount={10} accessLevel="private" />
             <ImageList
               sx={{ maxWidth: isMobile ? screenWidth : 600 }}
               cols={isMobile ? 2 : 3}

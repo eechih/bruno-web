@@ -19,7 +19,6 @@ import { ICredentials, parseAWSExports } from '@/lib/aws/core'
 import logger from '@/lib/logger'
 import { StorageErrorStrings } from './StorageErrorStrings'
 import {
-  AccessLevel,
   GetConfig,
   GetOutput,
   ListConfig,
@@ -28,6 +27,7 @@ import {
   PutResult,
   RemoveConfig,
   RemoveOutput,
+  StorageAccessLevel,
   StorageOptions
 } from './types'
 
@@ -68,7 +68,7 @@ export class StorageClass {
 
   private async _prefix(config: {
     credentials?: ICredentials
-    level?: AccessLevel
+    level?: StorageAccessLevel
   }) {
     const { credentials, level } = config
     if (level == 'private') {

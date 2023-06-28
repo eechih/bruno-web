@@ -6,19 +6,26 @@ import {
 
 import { ICredentials } from '@/lib/aws'
 
-export type AccessLevel = 'private' | 'protected' | 'public'
+export type StorageAccessLevel = 'private' | 'protected' | 'public'
 
 export type StorageOptions = {
   credentials?: ICredentials
   region?: string
-  level?: AccessLevel
+  level?: StorageAccessLevel
   bucket?: string
+}
+
+export interface UploadTask {
+  resume(): any
+  pause(): any
+  percent: number
+  isInProgress: boolean
 }
 
 export type CommonStorageOptions = {
   region?: string
   bucket?: string
-  level?: AccessLevel
+  level?: StorageAccessLevel
 }
 
 export type PutConfig = CommonStorageOptions & {

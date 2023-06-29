@@ -1,12 +1,15 @@
-import { useState } from 'react'
+import * as React from 'react'
 
+import logger from '@/lib/logger'
 import { FileStatus, StorageFiles } from '../../types'
 import { UseStorageManager, UseStorageManagerProps } from './types'
 
-export function useStorageManager({
-  defaultFiles = []
-}: UseStorageManagerProps): UseStorageManager {
-  const [files, setFiles] = useState<StorageFiles>(() => {
+export function useStorageManager(
+  props: UseStorageManagerProps
+): UseStorageManager {
+  const { defaultFiles = [] } = props
+
+  const [files, setFiles] = React.useState<StorageFiles>(() => {
     return defaultFiles.map(file => ({
       ...file,
       id: file.key,
@@ -41,11 +44,19 @@ export function useStorageManager({
     )
   }
 
+  const notImplementedFunction = () => {
+    logger.warn('not implemented.')
+  }
+
   return {
-    files,
     addFile,
+    clearFiles: notImplementedFunction,
     setUploadingFile,
+    setUploadProgress: notImplementedFunction,
     setUploadSuccess,
-    removeFile
+    setUploadResumed: notImplementedFunction,
+    setUploadPaused: notImplementedFunction,
+    removeFile,
+    files
   }
 }

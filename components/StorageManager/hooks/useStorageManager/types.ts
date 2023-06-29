@@ -7,9 +7,13 @@ export interface UseStorageManagerProps {
 }
 
 export interface UseStorageManager {
-  files: StorageFiles
   addFile: (params: { file: File }) => void
-  removeFile: (params: { id: string }) => void
+  clearFiles: () => void
   setUploadingFile: (params: { id: string }) => void
+  setUploadProgress: (params: { id: string; progress: number }) => void
   setUploadSuccess: (params: { id: string }) => void
+  setUploadResumed: (params: { id: string }) => void
+  setUploadPaused: (params: { id: string }) => void
+  removeFile: (params: { id: string }) => void
+  files: StorageFiles
 }

@@ -101,14 +101,7 @@ function StorageManagerBase(
   const notImplementedFunction = () => {}
 
   return (
-    <>
-      {showImageList && (
-        <ImageList
-          {...imageListProps}
-          files={files}
-          onDeleteUpload={onDeleteUpload}
-        />
-      )}
+    <Box>
       <Dialog {...dialogProps} enabled={dialogEnabled} ref={dialogRef}>
         <Box>
           <FilePicker onClick={onFilePickerClick} />
@@ -135,7 +128,14 @@ function StorageManagerBase(
           </Box>
         </Box>
       </Dialog>
-    </>
+      {showImageList && (
+        <ImageList
+          {...imageListProps}
+          files={files}
+          onDeleteUpload={onDeleteUpload}
+        />
+      )}
+    </Box>
   )
 }
 

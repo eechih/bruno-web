@@ -25,11 +25,11 @@ export function ImageList(props: ImageListProps) {
       cols={cols}
       rowHeight={rowHeight}
     >
-      {files.map(({ id, key, file, isImage }) => {
+      {files.map(({ id, key, file, isImage }, index) => {
         const thumbnailUrl = file && isImage ? URL.createObjectURL(file) : ''
 
         return (
-          <ImageListItem key={key}>
+          <ImageListItem key={index}>
             {true && (
               <FileThumbnail
                 isImage={isImage}

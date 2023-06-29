@@ -184,8 +184,12 @@ export default function ProductForm({ initialValues }: ProductFormProps) {
                 console.log('removeImage', index)
                 removeImage(index)
               }}
+              imageListProps={{
+                width: isMobile ? screenWidth : 600,
+                cols: isMobile ? 2 : 3,
+                rowHeight: isMobile ? (screenWidth / 2) * 0.67 : 133
+              }}
               dialogProps={{ fullScreen: isMobile }}
-              imageListProps={{ width: 500 }}
             />
           </Stack>
         </Grid>

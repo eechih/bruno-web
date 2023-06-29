@@ -14,13 +14,16 @@ function StorageManagerBase(
   ref: React.ForwardedRef<StorageManagerHandle>
 ) {
   const {
+    acceptedFileTypes = [],
     accessLevel,
     maxFileCount,
     defaultFiles,
+    isResumable = false,
     onFileRemove,
     onUploadSuccess,
     onUploadError,
     onUploadStart,
+    showThumbnails = true,
     dialog
   } = props
 
@@ -32,8 +35,14 @@ function StorageManagerBase(
     maxFileCount === undefined ||
     (typeof maxFileCount === 'number' && maxFileCount > 1)
 
-  const { files, addFile, removeFile, setUploadingFile, setUploadSuccess } =
-    useStorageManager({ defaultFiles })
+  const {
+    addFiles,
+    clearFiles,
+    setUploadingFile,
+    setUploadSuccess,
+    removeUpload,
+    files
+  } = useStorageManager({ defaultFiles })
 
   useUploadFiles({
     accessLevel,
@@ -51,9 +60,7 @@ function StorageManagerBase(
   const dialogRef = React.useRef<DialogHandle>(null)
 
   React.useImperativeHandle(ref, () => ({
-    clearFiles: () => {
-      logger.warn('not implementd.')
-    },
+    clearFiles,
     openDialog: () => {
       dialogRef.current?.open()
     },
@@ -67,10 +74,7 @@ function StorageManagerBase(
     if (!files || files.length === 0) {
       return
     }
-
-    Array.from(files).forEach(file => {
-      addFile({ file })
-    })
+    addFiles({ files: Array.from(files) })
   }
 
   function onFilePickerClick() {
@@ -80,8 +84,8 @@ function StorageManagerBase(
     }
   }
 
-  const hanldeDeleteFile = ({ id }: { id: string }) => {
-    removeFile({ id })
+  const onDeleteUpload = ({ id }: { id: string }) => {
+    removeUpload({ id })
     if (typeof onFileRemove === 'function') {
       const file = files.find(file => file.id === id)
       if (file) {
@@ -102,17 +106,17 @@ function StorageManagerBase(
           ref={hiddenFileInput}
           multiple={allowMultipleFiles}
           onChange={onFilePickerChange}
-          accept="image/*"
+          accept={acceptedFileTypes.join(',')}
         />
         <Box sx={{ marginTop: 2 }}>
           <FileList
             files={files}
-            isResumable={false}
+            isResumable={isResumable}
             onCancelUpload={notImplementedFunction}
-            onDeleteUpload={hanldeDeleteFile}
+            onDeleteUpload={onDeleteUpload}
             onResume={notImplementedFunction}
             onPause={notImplementedFunction}
-            showThumbnails={true}
+            showThumbnails={showThumbnails}
             hasMaxFilesError={false}
             maxFileCount={maxFileCount}
           />

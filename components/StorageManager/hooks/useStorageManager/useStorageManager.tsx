@@ -17,14 +17,22 @@ export function useStorageManager(
     })) as StorageFiles
   })
 
-  const addFile = ({ file }: { file: File }) => {
-    const newUploads = [
-      { id: file.name, file, key: file.name, status: FileStatus.QUEUED }
-    ] as StorageFiles
-    setFiles(prevFiles => [...prevFiles, ...newUploads])
+  const addFiles = ({ files }: { files: File[] }) => {
+    const newUploads = files.map(file => {
+      return { id: file.name, file, key: file.name, status: FileStatus.QUEUED }
+    }) as StorageFiles
+
+    setFiles(prevFiles => {
+      const newFiles = [...prevFiles, ...newUploads]
+      return newFiles
+    })
   }
 
-  const removeFile = ({ id }: { id: string }) => {
+  const clearFiles = () => {
+    setFiles([])
+  }
+
+  const removeUpload = ({ id }: { id: string }) => {
     setFiles(prevFiles => prevFiles.filter(file => file.id !== id))
   }
 
@@ -49,14 +57,14 @@ export function useStorageManager(
   }
 
   return {
-    addFile,
-    clearFiles: notImplementedFunction,
+    addFiles,
+    clearFiles,
     setUploadingFile,
     setUploadProgress: notImplementedFunction,
     setUploadSuccess,
     setUploadResumed: notImplementedFunction,
     setUploadPaused: notImplementedFunction,
-    removeFile,
+    removeUpload,
     files
   }
 }

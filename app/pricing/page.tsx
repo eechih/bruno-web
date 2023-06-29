@@ -41,6 +41,13 @@ export default function Page() {
       >
         Close Storage Manager
       </Button>
+      <Button
+        onClick={() => {
+          storageManagerRef.current?.clearFiles()
+        }}
+      >
+        Clear Files
+      </Button>
     </>
   )
 }

@@ -37,6 +37,7 @@ export interface StorageManagerProps {
   acceptedFileTypes?: string[]
   accessLevel: StorageAccessLevel
   defaultFiles?: DefaultFile[]
+  isResumable?: boolean
   maxFileCount: number
   maxFileSize?: number
   onFileRemove?: (file: { key: string }) => void

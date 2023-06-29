@@ -2,6 +2,7 @@
 
 import { StorageAccessLevel, UploadTask } from '@/lib/aws/storage'
 import { DialogProps } from './ui/Dialog'
+import { ImageListProps } from './ui/ImageList'
 
 export enum FileStatus {
   QUEUED = 'queued',
@@ -18,7 +19,7 @@ export interface StorageFile {
   progress: number
   uploadTask?: UploadTask
   key: string
-  error: string
+  error?: string
   isImage: boolean
 }
 
@@ -46,7 +47,13 @@ export interface StorageManagerProps {
   onUploadStart?: (event: { key?: string }) => void
   processFile?: ProcessFile
   showThumbnails?: boolean
-  dialog?: Omit<DialogProps, 'children'>
+  dialogEnabled?: boolean // default: true
+  dialogProps?: Omit<DialogProps, 'enabled' | 'children'>
+  showImageList?: boolean // default: true
+  imageListProps?: Pick<
+    ImageListProps,
+    'cols' | 'rowHeight' | 'width' | 'height'
+  >
 }
 
 export interface StorageManagerHandle {

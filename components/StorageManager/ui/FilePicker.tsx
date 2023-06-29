@@ -1,4 +1,4 @@
-import PhotoCameraIcon from '@mui/icons-material/PhotoCamera'
+import UploadFileIcon from '@mui/icons-material/UploadFile'
 import Button, { ButtonProps } from '@mui/material/Button'
 
 export type FilePickerProps = ButtonProps & {
@@ -7,10 +7,10 @@ export type FilePickerProps = ButtonProps & {
 }
 
 export function FilePicker({
-  children,
+  children = <span>上傳檔案</span>,
   color = 'inherit',
   size = 'large',
-  startIcon = <PhotoCameraIcon />,
+  startIcon = <UploadFileIcon />,
   width = '100%',
   height = 160,
   ...props

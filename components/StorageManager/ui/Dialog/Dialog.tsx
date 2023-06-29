@@ -17,12 +17,7 @@ const DIALOG_TITLE = ''
 const CLOSE_BUTTON_LABLE = '關閉'
 
 function DialogBase(props: DialogProps, ref: React.ForwardedRef<DialogHandle>) {
-  const {
-    children,
-    enabled = false,
-    fullScreen = false,
-    showTrigger = true
-  } = props
+  const { enabled, fullScreen = false, showTrigger = true, children } = props
   const [open, setOpen] = React.useState(false)
   const handleOpen = () => setOpen(true)
   const handleClose = () => setOpen(false)

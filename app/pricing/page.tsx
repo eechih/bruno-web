@@ -16,15 +16,24 @@ Storage.configure(awsExports)
 export default function Page() {
   const { isMobile } = useScreen()
   const storageManagerRef = React.useRef<StorageManagerHandle>(null)
+  const defaultFiles = [
+    { key: 'mockfile1' },
+    { key: 'mockfile2' },
+    { key: 'mockfile3' }
+    // { key: 'mockfile4' },
+    // { key: 'mockfile5' }
+  ]
 
   return (
     <>
       Pricing
       <StorageManager
         accessLevel="public"
+        defaultFiles={defaultFiles}
         maxFileCount={10}
         onUploadSuccess={({ key }) => console.log('file uploaded', key)}
-        dialog={{ enabled: true, fullScreen: isMobile, showTrigger: false }}
+        dialogProps={{ fullScreen: isMobile, showTrigger: false }}
+        imageListProps={{ width: 500 }}
         ref={storageManagerRef}
       />
       <Button

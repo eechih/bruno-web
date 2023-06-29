@@ -5,9 +5,9 @@ import Card from '@mui/material/Card'
 import CardHeader from '@mui/material/CardHeader'
 import IconButton from '@mui/material/IconButton'
 import Grid from '@mui/material/Unstable_Grid2'
-import NextImage from 'next/image'
 
 import { FileStatus } from '../../types'
+import { FileThumbnail } from '../FileThumbnail'
 import { FileListProps } from './types'
 
 export function FileList(props: FileListProps) {
@@ -15,7 +15,7 @@ export function FileList(props: FileListProps) {
   return (
     <Grid container spacing={2}>
       {files.map((storageFile, index) => {
-        const { id, file, status } = storageFile
+        const { id, file, status, isImage = true } = storageFile
         const thumbnailUrl = file ? URL.createObjectURL(file) : ''
         let subheader = ''
         if (status == FileStatus.UPLOADING) subheader = '上傳中...'
@@ -26,13 +26,11 @@ export function FileList(props: FileListProps) {
             <Card>
               <CardHeader
                 avatar={
-                  <NextImage
-                    src={thumbnailUrl}
-                    alt="image"
-                    priority
-                    style={{ objectFit: 'cover' }}
-                    width={48}
-                    height={32}
+                  <FileThumbnail
+                    url={thumbnailUrl}
+                    isImage={isImage}
+                    fileName={id}
+                    size="small"
                   />
                 }
                 action={

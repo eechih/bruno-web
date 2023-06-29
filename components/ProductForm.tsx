@@ -16,7 +16,6 @@ import {
 
 import awsExports from '@/aws-exports'
 import CreateProductButton from '@/components/CreateProductButton'
-import S3ImageList from '@/components/S3ImageList'
 import { StorageManager } from '@/components/StorageManager'
 import UpdateProductButton from '@/components/UpdateProductButton'
 import { ErrorMessage, Input, Select } from '@/components/forms'
@@ -175,6 +174,7 @@ export default function ProductForm({ initialValues }: ProductFormProps) {
             <StorageManager
               accessLevel="private"
               maxFileCount={10}
+              defaultFiles={images}
               onUploadSuccess={({ key }) => {
                 console.log('file uploaded', key)
                 if (key) appendImage({ key })
@@ -184,15 +184,8 @@ export default function ProductForm({ initialValues }: ProductFormProps) {
                 console.log('removeImage', index)
                 removeImage(index)
               }}
-              dialog={{ enabled: true, fullScreen: isMobile }}
-            />
-            <S3ImageList
-              keys={images.map(image => image.key)}
-              onRemoveImage={({ key }) => {
-                const index = images.findIndex(image => image.key == key)
-                console.log('removeImage', index)
-                removeImage(index)
-              }}
+              dialogProps={{ fullScreen: isMobile }}
+              imageListProps={{ width: 500 }}
             />
           </Stack>
         </Grid>

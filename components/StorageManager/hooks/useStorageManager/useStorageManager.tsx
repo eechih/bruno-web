@@ -19,7 +19,13 @@ export function useStorageManager(
 
   const addFiles = ({ files }: { files: File[] }) => {
     const newUploads = files.map(file => {
-      return { id: file.name, file, key: file.name, status: FileStatus.QUEUED }
+      return {
+        id: file.name,
+        file,
+        key: file.name,
+        status: FileStatus.QUEUED,
+        isImage: file.type.startsWith('image/')
+      }
     }) as StorageFiles
 
     setFiles(prevFiles => {

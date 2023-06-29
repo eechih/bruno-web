@@ -1,5 +1,5 @@
 export interface DialogProps {
-  enabled?: boolean // default false
+  enabled: boolean
   fullScreen?: boolean // default false
   showTrigger?: boolean // default true
   children?: React.ReactNode

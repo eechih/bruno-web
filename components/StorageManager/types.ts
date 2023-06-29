@@ -45,9 +45,7 @@ export interface StorageManagerProps {
   onUploadStart?: (event: { key?: string }) => void
   processFile?: ProcessFile
   showThumbnails?: boolean
-  dialog?: DialogProps & {
-    enabled: boolean
-  }
+  dialog?: Omit<DialogProps, 'children'>
 }
 
 export interface StorageManagerHandle {

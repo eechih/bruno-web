@@ -6,7 +6,7 @@ import { useStorageManager } from './hooks/useStorageManager/useStorageManager'
 import { useUploadFiles } from './hooks/useUploadFiles/useUploadFiles'
 import { StorageManagerHandle, StorageManagerProps } from './types'
 import { Dialog, DialogHandle } from './ui/Dialog'
-import { FileList } from './ui/FileList'
+import { FileList } from './ui/FileList/FileList'
 import { FilePicker } from './ui/FilePicker'
 
 function StorageManagerBase(
@@ -90,32 +90,36 @@ function StorageManagerBase(
     }
   }
 
-  const main = (
-    <Box>
-      <FilePicker onClick={onFilePickerClick}>上傳圖片</FilePicker>
-      <input
-        type="file"
-        hidden
-        ref={hiddenFileInput}
-        multiple={allowMultipleFiles}
-        onChange={onFilePickerChange}
-        accept="image/*"
-      />
-      <Box sx={{ marginTop: 2 }}>
-        <FileList files={files} onDeleteFile={hanldeDeleteFile} />
-      </Box>
-    </Box>
-  )
+  const notImplementedFunction = () => {}
 
-  if (dialog?.enabled) {
-    return (
-      <Dialog {...dialog} ref={dialogRef}>
-        {main}
-      </Dialog>
-    )
-  } else {
-    return main
-  }
+  return (
+    <Dialog {...dialog} ref={dialogRef}>
+      <Box>
+        <FilePicker onClick={onFilePickerClick}>上傳圖片</FilePicker>
+        <input
+          type="file"
+          hidden
+          ref={hiddenFileInput}
+          multiple={allowMultipleFiles}
+          onChange={onFilePickerChange}
+          accept="image/*"
+        />
+        <Box sx={{ marginTop: 2 }}>
+          <FileList
+            files={files}
+            isResumable={false}
+            onCancelUpload={notImplementedFunction}
+            onDeleteUpload={hanldeDeleteFile}
+            onResume={notImplementedFunction}
+            onPause={notImplementedFunction}
+            showThumbnails={true}
+            hasMaxFilesError={false}
+            maxFileCount={maxFileCount}
+          />
+        </Box>
+      </Box>
+    </Dialog>
+  )
 }
 
 const StorageManager = React.forwardRef<

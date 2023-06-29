@@ -7,14 +7,11 @@ import IconButton from '@mui/material/IconButton'
 import Grid from '@mui/material/Unstable_Grid2'
 import NextImage from 'next/image'
 
-import { FileStatus, StorageFile } from '../types'
+import { FileStatus } from '../../types'
+import { FileListProps } from './types'
 
-export interface FileListProps {
-  files: StorageFile[]
-  onDeleteFile: (params: { id: string }) => void
-}
-
-export function FileList({ files, onDeleteFile }: FileListProps) {
+export function FileList(props: FileListProps) {
+  const { files, onDeleteUpload } = props
   return (
     <Grid container spacing={2}>
       {files.map((storageFile, index) => {
@@ -41,7 +38,7 @@ export function FileList({ files, onDeleteFile }: FileListProps) {
                 action={
                   <IconButton
                     aria-label="settings"
-                    onClick={() => onDeleteFile({ id })}
+                    onClick={() => onDeleteUpload({ id })}
                   >
                     <ClearIcon />
                   </IconButton>

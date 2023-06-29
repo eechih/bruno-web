@@ -1,6 +1,7 @@
 /* eslint-disable no-unused-vars */
 
 import { StorageAccessLevel, UploadTask } from '@/lib/aws/storage'
+import { DialogProps } from './ui/Dialog'
 
 export enum FileStatus {
   QUEUED = 'queued',
@@ -44,6 +45,13 @@ export interface StorageManagerProps {
   onUploadStart?: (event: { key?: string }) => void
   processFile?: ProcessFile
   showThumbnails?: boolean
-  dialogEnabled?: boolean
-  dialogFullScreen?: boolean
+  dialog?: DialogProps & {
+    enabled: boolean
+  }
+}
+
+export interface StorageManagerHandle {
+  clearFiles: () => void
+  openDialog: () => void
+  closeDialog: () => void
 }

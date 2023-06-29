@@ -1,2 +1,2 @@
 export { StorageManager } from './StorageManager'
-export type { StorageManagerProps } from './types'
+export type { StorageManagerHandle, StorageManagerProps } from './types'

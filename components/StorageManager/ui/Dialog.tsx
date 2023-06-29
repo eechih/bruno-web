@@ -16,19 +16,37 @@ const CLOSE_BUTTON_LABLE = '關閉'
 
 export interface DialogProps {
   children?: React.ReactNode
-  fullScreen?: boolean
+  fullScreen?: boolean // default false
+  showTrigger?: boolean // default true
 }
 
-export function Dialog({ children, fullScreen }: DialogProps) {
+export interface DialogHandle {
+  open: () => void
+  close: () => void
+}
+
+function DialogBase(props: DialogProps, ref: React.ForwardedRef<DialogHandle>) {
+  const { children, fullScreen = false, showTrigger = true } = props
   const [open, setOpen] = React.useState(false)
   const handleOpen = () => setOpen(true)
   const handleClose = () => setOpen(false)
 
+  React.useImperativeHandle(ref, () => ({
+    open: () => {
+      setOpen(true)
+    },
+    close: () => {
+      setOpen(false)
+    }
+  }))
+
   return (
     <Box>
-      <IconButton onClick={handleOpen}>
-        <PhotoCameraIcon />
-      </IconButton>
+      {showTrigger && (
+        <IconButton onClick={handleOpen}>
+          <PhotoCameraIcon />
+        </IconButton>
+      )}
       <MuiDialog
         open={open}
         onClose={handleClose}
@@ -66,3 +84,7 @@ export function Dialog({ children, fullScreen }: DialogProps) {
     </Box>
   )
 }
+
+const Dialog = React.forwardRef<DialogHandle, DialogProps>(DialogBase)
+
+export { Dialog }

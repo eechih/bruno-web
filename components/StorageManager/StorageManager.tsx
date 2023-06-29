@@ -4,22 +4,26 @@ import * as React from 'react'
 import logger from '@/lib/logger'
 import { useStorageManager } from './hooks/useStorageManager'
 import { useUploadFiles } from './hooks/useUploadFiles'
-import { StorageManagerProps } from './types'
-import { Dialog } from './ui/Dialog'
+import { StorageManagerHandle, StorageManagerProps } from './types'
+import { Dialog, DialogHandle } from './ui/Dialog'
 import { FileList } from './ui/FileList'
 import { FilePicker } from './ui/FilePicker'
 
-export function StorageManager({
-  accessLevel,
-  maxFileCount,
-  defaultFiles,
-  onFileRemove,
-  onUploadSuccess,
-  onUploadError,
-  onUploadStart,
-  dialogEnabled,
-  dialogFullScreen
-}: StorageManagerProps) {
+function StorageManagerBase(
+  props: StorageManagerProps,
+  ref: React.ForwardedRef<StorageManagerHandle>
+) {
+  const {
+    accessLevel,
+    maxFileCount,
+    defaultFiles,
+    onFileRemove,
+    onUploadSuccess,
+    onUploadError,
+    onUploadStart,
+    dialog
+  } = props
+
   if (!accessLevel || !maxFileCount) {
     logger.warn('StorageManager requires accessLevel and maxFileCount props')
   }
@@ -43,6 +47,21 @@ export function StorageManager({
     setUploadSuccess
   })
 
+  const hiddenFileInput = React.useRef<HTMLInputElement>(null)
+  const dialogRef = React.useRef<DialogHandle>(null)
+
+  React.useImperativeHandle(ref, () => ({
+    clearFiles: () => {
+      logger.warn('not implementd.')
+    },
+    openDialog: () => {
+      dialogRef.current?.open()
+    },
+    closeDialog: () => {
+      dialogRef.current?.close()
+    }
+  }))
+
   const onFilePickerChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { files } = event.target
     if (!files || files.length === 0) {
@@ -53,8 +72,6 @@ export function StorageManager({
       addFile({ file })
     })
   }
-
-  const hiddenFileInput = React.useRef<HTMLInputElement>(null)
 
   function onFilePickerClick() {
     if (hiddenFileInput.current) {
@@ -74,7 +91,7 @@ export function StorageManager({
   }
 
   const main = (
-    <Box sx={{ padding: dialogEnabled ? 0 : 0 }}>
+    <Box>
       <FilePicker onClick={onFilePickerClick}>上傳圖片</FilePicker>
       <input
         type="file"
@@ -90,7 +107,20 @@ export function StorageManager({
     </Box>
   )
 
-  if (dialogEnabled)
-    return <Dialog fullScreen={dialogFullScreen}>{main}</Dialog>
-  else return main
+  if (dialog?.enabled) {
+    return (
+      <Dialog {...dialog} ref={dialogRef}>
+        {main}
+      </Dialog>
+    )
+  } else {
+    return main
+  }
 }
+
+const StorageManager = React.forwardRef<
+  StorageManagerHandle,
+  StorageManagerProps
+>(StorageManagerBase)
+
+export { StorageManager }

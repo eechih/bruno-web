@@ -184,8 +184,7 @@ export default function ProductForm({ initialValues }: ProductFormProps) {
                 console.log('removeImage', index)
                 removeImage(index)
               }}
-              dialogEnabled
-              dialogFullScreen={isMobile}
+              dialog={{ enabled: true, fullScreen: isMobile }}
             />
             <S3ImageList
               keys={images.map(image => image.key)}

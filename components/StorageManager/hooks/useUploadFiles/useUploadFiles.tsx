@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
 
-import { FileStatus } from '../types'
-import { uploadFile } from '../utils/uploadFile'
+import { FileStatus } from '../../types'
+import { uploadFile } from '../../utils/uploadFile'
 import { UseUploadFilesProps } from './types'
 
 export function useUploadFiles(props: UseUploadFilesProps) {

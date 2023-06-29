@@ -1,6 +1,6 @@
 import { useState } from 'react'
 
-import { FileStatus, StorageFiles } from '../types'
+import { FileStatus, StorageFiles } from '../../types'
 import { UseStorageManager, UseStorageManagerProps } from './types'
 
 export function useStorageManager({

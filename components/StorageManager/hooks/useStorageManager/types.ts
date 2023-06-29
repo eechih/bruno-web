@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-vars */
 
-import { DefaultFile, StorageFiles, StorageManagerProps } from '../types'
+import { DefaultFile, StorageFiles } from '../../types'
 
 export interface UseStorageManagerProps {
   defaultFiles?: DefaultFile[]
@@ -13,14 +13,3 @@ export interface UseStorageManager {
   setUploadingFile: (params: { id: string }) => void
   setUploadSuccess: (params: { id: string }) => void
 }
-
-export type UseUploadFilesProps = Pick<
-  StorageManagerProps,
-  | 'accessLevel'
-  | 'maxFileCount'
-  | 'onFileRemove'
-  | 'onUploadStart'
-  | 'onUploadSuccess'
-  | 'onUploadError'
-> &
-  Pick<UseStorageManager, 'files' | 'setUploadSuccess' | 'setUploadingFile'>

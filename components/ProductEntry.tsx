@@ -13,16 +13,13 @@ import Typography from '@mui/material/Typography'
 import DeleteProductButton from '@/components/DeleteProductButton'
 import useGetProduct from '@/hooks/useGetProduct'
 import { useScreen } from '@/hooks/useMediaQuery'
-import { useStorageURL } from '@/hooks/useStorageURL'
+import useStorageURL from '@/hooks/useStorageURL'
 
 interface ProductImageProps {
   file: { key: string }
 }
 function ProductImage({ file: { key } }: ProductImageProps) {
-  const { url, error, isLoading } = useStorageURL({
-    key,
-    options: { level: 'private' }
-  })
+  const { url, error, isLoading } = useStorageURL(key, 'private')
   if (isLoading) return <Skeleton variant="rectangular" height={180} />
   if (error)
     return (
@@ -62,9 +59,7 @@ function DefaultImage() {
 export default function ProductEntry({ id }: { id: string }) {
   const { product, productLoading } = useGetProduct(id)
   const { isMobile } = useScreen()
-
   const thumbnail = product?.images?.[0] && { key: product.images[0] }
-  console.log('thumbnail', thumbnail)
 
   return (
     <div>

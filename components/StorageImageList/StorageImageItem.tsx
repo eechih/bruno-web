@@ -9,7 +9,7 @@ import ImageListItemBar from '@mui/material/ImageListItemBar'
 import Stack from '@mui/material/Stack'
 import NextImage from 'next/image'
 
-import { useStorageURL } from '@/hooks/useStorageURL'
+import useStorageURL from '@/hooks/useStorageURL'
 import { StorageImageItemProps } from './types'
 
 export function StorageImageItem(props: StorageImageItemProps) {
@@ -19,10 +19,7 @@ export function StorageImageItem(props: StorageImageItemProps) {
     onFileRemove
   } = props
 
-  const { url, error, isLoading } = useStorageURL({
-    key,
-    options: { level: accessLevel }
-  })
+  const { url, error, isLoading } = useStorageURL(key, accessLevel)
 
   return (
     <ImageListItem>

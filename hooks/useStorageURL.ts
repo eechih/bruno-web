@@ -1,47 +1,35 @@
-import * as React from 'react'
+/* eslint-disable no-unused-vars */
 
-import { GetConfig, Storage } from '@/lib/aws/storage'
+import useSWR, { Fetcher } from 'swr'
 
-export interface UseStorageURL {
-  url?: string
-  error?: Error
-  isLoading: boolean
+import { Storage } from '@/lib/aws/storage'
+
+type Data = string
+type Key = {
+  objectKey: string
+  accessLevel: 'private' | 'protected' | 'public'
 }
 
-export interface useStorageURLProps {
-  key: string
-  options?: GetConfig
+const fetcher: Fetcher<Data, Key> = async ({ objectKey, accessLevel }) => {
+  return Storage.get(objectKey, { level: accessLevel })
 }
 
-export const useStorageURL = (
-  props: useStorageURLProps
-): UseStorageURL & { fetch: () => () => void } => {
-  const { key, options } = props
-
-  const [result, setResult] = React.useState<UseStorageURL>({
-    isLoading: true
-  })
-
-  // Used to prevent an infinite loop on useEffect, because `options`
-  // will have a different reference on every render
-  const serializedOptions = JSON.stringify(options)
-
-  const fetch = () => {
-    setResult({ isLoading: true })
-
-    const options = JSON.parse(serializedOptions) as GetConfig
-    const promise = Storage.get(key, options)
-
-    // Attempt to fetch storage object url
-    promise
-      .then(url => setResult({ url, isLoading: false }))
-      .catch((error: Error) => setResult({ error, isLoading: false }))
-
-    // Cancel current promise on unmount
-    return () => {}
+export default function useStorageURL(objectKey: string, accessLevel: string) {
+  const key = {
+    name: 'storageURL',
+    objectKey: objectKey,
+    accessLevel: accessLevel
   }
+  const options = {
+    revalidateIfStale: false,
+    revalidateOnFocus: false,
+    revalidateOnReconnect: false
+  }
+  const { data, isLoading, error } = useSWR(key, fetcher, options)
 
-  React.useEffect(fetch, [key, serializedOptions])
-
-  return { ...result, fetch }
+  return {
+    url: data,
+    isLoading,
+    error
+  }
 }

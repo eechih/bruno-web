@@ -1,15 +1,12 @@
 import { graphql } from '../bruno-api'
-import {
-  createProductMutation,
-  deleteProductMutation,
-  updateProductMutation
-} from './mutations'
-import { getProductQuery, listProductsQuery } from './queries'
+import * as mutations from './mutations'
+import * as queries from './queries'
 import {
   CreateProductInput,
   DeleteProductInput,
   Product,
   ProductConnection,
+  PublishProductInput,
   UpdateProductInput
 } from './types'
 
@@ -30,7 +27,7 @@ export async function listProducts(
   console.log('listProducts', nextToken, authToken)
   const limit = 2
   const res = await graphql<ListProductsOperation>({
-    query: listProductsQuery,
+    query: queries.listProductsQuery,
     variables: { limit, nextToken },
     authToken: authToken
   })
@@ -51,7 +48,7 @@ export async function getProduct(
   authToken?: string
 ): Promise<Product> {
   const res = await graphql<GetProductOperation>({
-    query: getProductQuery,
+    query: queries.getProductQuery,
     variables: { id },
     authToken
   })
@@ -72,7 +69,7 @@ export async function createProduct(
   authToken?: string
 ): Promise<Product> {
   const res = await graphql<CreateProductOperation>({
-    query: createProductMutation,
+    query: mutations.createProductMutation,
     variables: { input },
     authToken
   })
@@ -93,7 +90,7 @@ export async function updateProduct(
   authToken?: string
 ): Promise<Product> {
   const res = await graphql<UpdateProductOperation>({
-    query: updateProductMutation,
+    query: mutations.updateProductMutation,
     variables: { input },
     authToken
   })
@@ -114,9 +111,30 @@ export async function deleteProduct(
   authToken?: string
 ): Promise<Product> {
   const res = await graphql<DeleteProductOperation>({
-    query: deleteProductMutation,
+    query: mutations.deleteProductMutation,
     variables: { input },
     authToken
   })
   return res.data.deleteProduct
+}
+
+interface PublishProductOperation {
+  variables: {
+    input: PublishProductInput
+  }
+  data: {
+    publishProduct: Product
+  }
+}
+
+export async function publishProduct(
+  input: PublishProductInput,
+  authToken?: string
+): Promise<Product> {
+  const res = await graphql<PublishProductOperation>({
+    query: mutations.publishProductMutation,
+    variables: { input },
+    authToken
+  })
+  return res.data.publishProduct
 }

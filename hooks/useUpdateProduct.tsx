@@ -17,11 +17,11 @@ type Key = {
 }
 type SWRData = Product
 
-const fetcher: MutationFetcher<Data, ExtraArg, Key> = async (key, options) => {
+const fetcher: MutationFetcher<Data, Key, ExtraArg> = async (key, options) => {
   return updateProduct(options.arg.input, key.accessToken)
 }
 
-const options: SWRMutationConfiguration<Data, Error, ExtraArg, Key, SWRData> = {
+const options: SWRMutationConfiguration<Data, Error, Key, ExtraArg, SWRData> = {
   populateCache: (updated, cached) => {
     if (cached) return { ...cached, ...updated }
     return updated

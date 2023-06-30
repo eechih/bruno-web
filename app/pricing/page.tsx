@@ -1,6 +1,7 @@
 'use client'
 
 import Button from '@mui/material/Button'
+import { useSession } from 'next-auth/react'
 import * as React from 'react'
 
 import awsExports from '@/aws-exports'
@@ -11,10 +12,12 @@ import {
 } from '@/components/StorageManager'
 import { useScreen } from '@/hooks/useMediaQuery'
 import { Storage } from '@/lib/aws'
+import { publishProduct } from '@/lib/bruno'
 
 Storage.configure(awsExports)
 
 export default function Page() {
+  const session = useSession()
   const { isMobile } = useScreen()
   const [files, setFiles] = React.useState<{ key: string }[]>([])
   const storageManagerRef = React.useRef<StorageManagerHandle>(null)
@@ -71,6 +74,15 @@ export default function Page() {
         }}
       >
         Clear Files
+      </Button>
+      <Button
+        onClick={async () => {
+          const accessToken = session.data?.accessToken
+          const result = await publishProduct({ id: 'test' }, accessToken)
+          console.log('result', result)
+        }}
+      >
+        Publish Product
       </Button>
     </>
   )

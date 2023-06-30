@@ -42,3 +42,18 @@ export const deleteProductMutation = /* GraphQL */ `
     }
   }
 `
+
+export const publishProductMutation = /* GraphQL */ `
+  mutation PublishProduct($input: PublishProductInput!) {
+    publishProduct(input: $input) {
+      id
+      name
+      description
+      price
+      cost
+      images
+      provider
+      offShelfAt
+    }
+  }
+`

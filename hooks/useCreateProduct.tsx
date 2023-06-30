@@ -13,11 +13,11 @@ type Key = { name: string; nextToken?: string; accessToken?: string }
 type ExtraArg = { input: CreateProductInput }
 type SWRData = ProductConnection
 
-const fetcher: MutationFetcher<Data, ExtraArg, Key> = async (key, { arg }) => {
+const fetcher: MutationFetcher<Data, Key, ExtraArg> = async (key, { arg }) => {
   return createProduct(arg.input, key.accessToken)
 }
 
-const options: SWRMutationConfiguration<Data, Error, ExtraArg, Key, SWRData> = {
+const options: SWRMutationConfiguration<Data, Error, Key, ExtraArg, SWRData> = {
   populateCache: (created, cached) => {
     if (cached) {
       return { ...cached, items: [created, ...cached.items] }

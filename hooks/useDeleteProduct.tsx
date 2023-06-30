@@ -17,11 +17,11 @@ type Key = {
 type ExtraArg = { input: DeleteProductInput }
 type SWRData = ProductConnection
 
-const fetcher: MutationFetcher<Data, ExtraArg, Key> = async (key, { arg }) => {
+const fetcher: MutationFetcher<Data, Key, ExtraArg> = async (key, { arg }) => {
   return deleteProduct(arg.input, key.accessToken)
 }
 
-const options: SWRMutationConfiguration<Data, Error, ExtraArg, Key, SWRData> = {
+const options: SWRMutationConfiguration<Data, Error, Key, ExtraArg, SWRData> = {
   populateCache: (deleted, cached) => {
     if (cached) {
       return {

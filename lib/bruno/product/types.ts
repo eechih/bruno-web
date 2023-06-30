@@ -19,3 +19,5 @@ export type CreateProductInput = Omit<Product, 'id'>
 export type UpdateProductInput = Partial<Product> & Pick<Product, 'id'>
 
 export type DeleteProductInput = Pick<Product, 'id'>
+
+export type PublishProductInput = Pick<Product, 'id'>

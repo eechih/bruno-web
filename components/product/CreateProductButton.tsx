@@ -8,7 +8,7 @@ import { SubmitHandler, useFormContext } from 'react-hook-form'
 import useCreateProduct from '@/hooks/useCreateProduct'
 import { toOffShelfAt } from '@/lib/utils'
 import { CreateProductInput } from '@/models'
-import { ProductFormInputs } from './ProductForm'
+import { ProductFormInputs } from './types'
 
 type CreateProductButtonProps = {
   onSuccess?: () => void

@@ -1,6 +1,6 @@
 'use client'
 
-import ProductForm, { convertToInputs } from '@/components/ProductForm'
+import { ProductForm } from '@/components/product'
 import useGetProduct from '@/hooks/useGetProduct'
 
 type PageProps = {
@@ -12,7 +12,5 @@ export default function Page({ params: { productId } }: PageProps) {
 
   if (productLoading) return 'Loading...'
 
-  return (
-    <>{product && <ProductForm initialValues={convertToInputs(product)} />}</>
-  )
+  return <>{product && <ProductForm product={product} />}</>
 }

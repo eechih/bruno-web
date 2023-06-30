@@ -2,69 +2,38 @@
 
 import { Product } from '@/models'
 import Button from '@mui/material/Button'
+import Paper from '@mui/material/Paper'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import Grid from '@mui/material/Unstable_Grid2'
 import moment from 'moment'
 import Link from 'next/link'
-import {
-  DefaultValues,
-  FormProvider,
-  useFieldArray,
-  useForm
-} from 'react-hook-form'
+import { FormProvider, useFieldArray, useForm } from 'react-hook-form'
 
-import awsExports from '@/aws-exports'
-import CreateProductButton from '@/components/CreateProductButton'
 import { StorageImageList } from '@/components/StorageImageList'
 import { StorageManager } from '@/components/StorageManager'
-import UpdateProductButton from '@/components/UpdateProductButton'
 import { ErrorMessage, Input, Select } from '@/components/forms'
 import { useScreen } from '@/hooks/useMediaQuery'
-import { Storage } from '@/lib/aws'
 import { providers } from '@/lib/constants'
+import CreateProductButton from './CreateProductButton'
+import UpdateProductButton from './UpdateProductButton'
+import { ProductFormInputs, ProductFormProps } from './types'
+import { convertToFormInputs, getDefaultFormInputs } from './utils'
 
-Storage.configure(awsExports)
-
-export type ProductFormInputs = {
-  id?: string
-  name: string
-  price: string
-  cost: string
-  provider: string
-  offShelfDate: string
-  offShelfTime: string
-  description: string
-  option: string
-  images: { key: string }[]
-}
-
-const defaultValues: DefaultValues<ProductFormInputs> = {
-  name: '',
-  price: '',
-  cost: '',
-  provider: 'CAT',
-  offShelfDate: moment().utcOffset(8).format('yyyy-MM-DD'),
-  offShelfTime: '20:00',
-  option: '',
-  description: '',
-  images: []
-}
-
-export type ProductFormProps = {
-  initialValues?: DefaultValues<ProductFormInputs>
-}
-
-export default function ProductForm({ initialValues }: ProductFormProps) {
+export default function ProductForm({ product }: ProductFormProps) {
   const methods = useForm<ProductFormInputs>({
-    defaultValues: initialValues ?? defaultValues
+    defaultValues: product
+      ? convertToFormInputs(product)
+      : getDefaultFormInputs()
   })
+
   const { control, formState, watch } = methods
   const { dirtyFields } = formState
-  const productId = initialValues?.id
+  const productId = product?.id
   const watchAllFields = watch()
   const { isMobile, screenWidth } = useScreen()
-  const variant = isMobile ? 'filled' : 'outlined'
+  const variant = 'outlined'
+  const storageImageListWidth = screenWidth - 64
 
   const {
     fields: images,
@@ -89,9 +58,9 @@ export default function ProductForm({ initialValues }: ProductFormProps) {
 
   return (
     <FormProvider {...methods}>
-      <Grid container spacing={isMobile ? 0 : 2}>
+      <Grid container spacing={isMobile ? 2 : 2}>
         <Grid xs={12} md={6}>
-          <Stack spacing={2}>
+          <Stack spacing={2} component={Paper} sx={{ padding: 2 }}>
             <Typography variant="h6">基本設定</Typography>
             <Input
               name="name"
@@ -101,7 +70,6 @@ export default function ProductForm({ initialValues }: ProductFormProps) {
               type="txt"
               required
               fullWidth
-              autoFocus={!initialValues}
               variant={variant}
             />
             <Input
@@ -167,7 +135,7 @@ export default function ProductForm({ initialValues }: ProductFormProps) {
         </Grid>
 
         <Grid xs={12} md={6}>
-          <Stack spacing={2}>
+          <Stack spacing={2} component={Paper} sx={{ padding: 2 }}>
             <Typography variant="h6">社群貼文內容</Typography>
             <Input
               name="description"
@@ -182,8 +150,8 @@ export default function ProductForm({ initialValues }: ProductFormProps) {
           </Stack>
         </Grid>
         <Grid xs={12}>
-          <Stack spacing={0}>
-            <Typography variant="h6">產品圖片{screenWidth}</Typography>
+          <Stack spacing={0} component={Paper} sx={{ padding: 2 }}>
+            <Typography variant="h6">產品列表</Typography>
             <StorageManager
               accessLevel="private"
               maxFileCount={10}
@@ -195,9 +163,9 @@ export default function ProductForm({ initialValues }: ProductFormProps) {
               accessLevel="private"
               files={images}
               onFileRemove={handleImageReomve}
-              width={isMobile ? screenWidth : 600}
+              width={isMobile ? storageImageListWidth : 600}
               cols={isMobile ? 2 : 3}
-              rowHeight={isMobile ? (screenWidth / 2) * 0.67 : 133}
+              rowHeight={isMobile ? (storageImageListWidth / 2) * 0.67 : 133}
             />
           </Stack>
         </Grid>
@@ -222,8 +190,8 @@ export default function ProductForm({ initialValues }: ProductFormProps) {
             <ErrorMessage error={formState.errors.root} />
           )}
         </Grid>
-        {!isMobile && <pre>{JSON.stringify(watchAllFields, null, 2)}</pre>}
-        <pre>{JSON.stringify(dirtyFields, null, 2)}</pre>
+        {false && <pre>{JSON.stringify(watchAllFields, null, 2)}</pre>}
+        {false && <pre>{JSON.stringify(dirtyFields, null, 2)}</pre>}
       </Grid>
     </FormProvider>
   )

@@ -10,7 +10,7 @@ import useUpdateProduct from '@/hooks/useUpdateProduct'
 import logger from '@/lib/logger'
 import { toOffShelfAt } from '@/lib/utils'
 import { UpdateProductInput } from '@/models'
-import { ProductFormInputs } from './ProductForm'
+import { ProductFormInputs } from './types'
 
 type UpdateProductButtonProps = {
   productId: string

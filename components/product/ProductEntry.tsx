@@ -10,10 +10,10 @@ import Skeleton from '@mui/material/Skeleton'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 
-import DeleteProductButton from '@/components/DeleteProductButton'
 import useGetProduct from '@/hooks/useGetProduct'
 import { useScreen } from '@/hooks/useMediaQuery'
 import useStorageURL from '@/hooks/useStorageURL'
+import DeleteProductButton from './DeleteProductButton'
 
 interface ProductImageProps {
   file: { key: string }

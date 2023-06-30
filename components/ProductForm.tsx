@@ -16,6 +16,7 @@ import {
 
 import awsExports from '@/aws-exports'
 import CreateProductButton from '@/components/CreateProductButton'
+import { StorageImageList } from '@/components/StorageImageList'
 import { StorageManager } from '@/components/StorageManager'
 import UpdateProductButton from '@/components/UpdateProductButton'
 import { ErrorMessage, Input, Select } from '@/components/forms'
@@ -73,6 +74,18 @@ export default function ProductForm({ initialValues }: ProductFormProps) {
     control,
     name: 'images'
   })
+
+  const handleImageAppend = (params: { key?: string }) => {
+    if (params.key) {
+      const found = images.find(image => image.key == params.key)
+      if (!found) appendImage({ key: params.key })
+    }
+  }
+
+  const handleImageReomve = (params: { key: string }) => {
+    const index = images.findIndex(image => image.key == params.key)
+    if (index > -1) removeImage(index)
+  }
 
   return (
     <FormProvider {...methods}>
@@ -174,22 +187,17 @@ export default function ProductForm({ initialValues }: ProductFormProps) {
             <StorageManager
               accessLevel="private"
               maxFileCount={10}
-              defaultFiles={images}
-              onUploadSuccess={({ key }) => {
-                console.log('file uploaded', key)
-                if (key) appendImage({ key })
-              }}
-              onFileRemove={({ key }) => {
-                const index = images.findIndex(image => image.key == key)
-                console.log('removeImage', index)
-                removeImage(index)
-              }}
-              imageListProps={{
-                width: isMobile ? screenWidth : 600,
-                cols: isMobile ? 2 : 3,
-                rowHeight: isMobile ? (screenWidth / 2) * 0.67 : 133
-              }}
+              onUploadSuccess={handleImageAppend}
+              onFileRemove={handleImageReomve}
               dialogProps={{ fullScreen: isMobile }}
+            />
+            <StorageImageList
+              accessLevel="private"
+              files={images}
+              onFileRemove={handleImageReomve}
+              width={isMobile ? screenWidth : 600}
+              cols={isMobile ? 2 : 3}
+              rowHeight={isMobile ? (screenWidth / 2) * 0.67 : 133}
             />
           </Stack>
         </Grid>

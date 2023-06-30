@@ -4,6 +4,7 @@ import Button from '@mui/material/Button'
 import * as React from 'react'
 
 import awsExports from '@/aws-exports'
+import { StorageImageList } from '@/components/StorageImageList'
 import {
   StorageManager,
   StorageManagerHandle
@@ -15,25 +16,39 @@ Storage.configure(awsExports)
 
 export default function Page() {
   const { isMobile } = useScreen()
+  const [files, setFiles] = React.useState<{ key: string }[]>([])
   const storageManagerRef = React.useRef<StorageManagerHandle>(null)
-  const defaultFiles = [
-    { key: 'mockfile1' },
-    { key: 'mockfile2' },
-    { key: 'mockfile3' }
-    // { key: 'mockfile4' },
-    // { key: 'mockfile5' }
-  ]
+
+  const addFile = ({ key }: { key?: string }) => {
+    if (key)
+      setFiles(prevFiles => {
+        const found = files.find(file => file.key === key)
+        if (found) return prevFiles
+        else return [...prevFiles, { key }]
+      })
+  }
+
+  const removeFile = ({ key }: { key: string }) => {
+    setFiles(prevFiles => {
+      return prevFiles.filter(file => file.key !== key)
+    })
+  }
 
   return (
     <>
       Pricing
+      <StorageImageList
+        accessLevel="public"
+        files={files}
+        onFileRemove={removeFile}
+        width={500}
+      />
       <StorageManager
         accessLevel="public"
-        defaultFiles={defaultFiles}
         maxFileCount={10}
-        onUploadSuccess={({ key }) => console.log('file uploaded', key)}
+        onUploadSuccess={addFile}
+        onFileRemove={removeFile}
         dialogProps={{ fullScreen: isMobile, showTrigger: false }}
-        imageListProps={{ width: 500 }}
         ref={storageManagerRef}
       />
       <Button

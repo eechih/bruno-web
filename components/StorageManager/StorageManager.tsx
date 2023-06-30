@@ -8,7 +8,6 @@ import { StorageManagerHandle, StorageManagerProps } from './types'
 import { Dialog, DialogHandle } from './ui/Dialog'
 import { FileList } from './ui/FileList'
 import { FilePicker } from './ui/FilePicker'
-import { ImageList } from './ui/ImageList'
 
 function StorageManagerBase(
   props: StorageManagerProps,
@@ -26,9 +25,7 @@ function StorageManagerBase(
     onUploadStart,
     showThumbnails = true,
     dialogEnabled = true,
-    dialogProps,
-    showImageList = true,
-    imageListProps = { enabled: true }
+    dialogProps
   } = props
 
   if (!accessLevel || !maxFileCount) {
@@ -101,41 +98,32 @@ function StorageManagerBase(
   const notImplementedFunction = () => {}
 
   return (
-    <Box>
-      <Dialog {...dialogProps} enabled={dialogEnabled} ref={dialogRef}>
-        <Box>
-          <FilePicker onClick={onFilePickerClick} />
-          <input
-            type="file"
-            hidden
-            ref={hiddenFileInput}
-            multiple={allowMultipleFiles}
-            onChange={onFilePickerChange}
-            accept={acceptedFileTypes.join(',')}
-          />
-          <Box sx={{ marginTop: 2 }}>
-            <FileList
-              files={files}
-              isResumable={isResumable}
-              onCancelUpload={notImplementedFunction}
-              onDeleteUpload={onDeleteUpload}
-              onResume={notImplementedFunction}
-              onPause={notImplementedFunction}
-              showThumbnails={showThumbnails}
-              hasMaxFilesError={false}
-              maxFileCount={maxFileCount}
-            />
-          </Box>
-        </Box>
-      </Dialog>
-      {showImageList && (
-        <ImageList
-          {...imageListProps}
-          files={files}
-          onDeleteUpload={onDeleteUpload}
+    <Dialog {...dialogProps} enabled={dialogEnabled} ref={dialogRef}>
+      <Box>
+        <FilePicker onClick={onFilePickerClick} />
+        <input
+          type="file"
+          hidden
+          ref={hiddenFileInput}
+          multiple={allowMultipleFiles}
+          onChange={onFilePickerChange}
+          accept={acceptedFileTypes.join(',')}
         />
-      )}
-    </Box>
+        <Box sx={{ marginTop: 2 }}>
+          <FileList
+            files={files}
+            isResumable={isResumable}
+            onCancelUpload={notImplementedFunction}
+            onDeleteUpload={onDeleteUpload}
+            onResume={notImplementedFunction}
+            onPause={notImplementedFunction}
+            showThumbnails={showThumbnails}
+            hasMaxFilesError={false}
+            maxFileCount={maxFileCount}
+          />
+        </Box>
+      </Box>
+    </Dialog>
   )
 }
 

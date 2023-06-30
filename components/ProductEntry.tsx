@@ -1,5 +1,6 @@
 import Link from 'next/link'
 
+import BrokenImageIcon from '@mui/icons-material/BrokenImage'
 import Button from '@mui/material/Button'
 import Card from '@mui/material/Card'
 import CardActions from '@mui/material/CardActions'
@@ -12,10 +13,58 @@ import Typography from '@mui/material/Typography'
 import DeleteProductButton from '@/components/DeleteProductButton'
 import useGetProduct from '@/hooks/useGetProduct'
 import { useScreen } from '@/hooks/useMediaQuery'
+import { useStorageURL } from '@/hooks/useStorageURL'
+
+interface ProductImageProps {
+  file: { key: string }
+}
+function ProductImage({ file: { key } }: ProductImageProps) {
+  const { url, error, isLoading } = useStorageURL({
+    key,
+    options: { level: 'private' }
+  })
+  if (isLoading) return <Skeleton variant="rectangular" height={180} />
+  if (error)
+    return (
+      <Stack
+        justifyContent="center"
+        alignItems="center"
+        sx={{
+          width: '100%',
+          height: 180,
+          backgroundColor: '#ddd'
+        }}
+      >
+        <BrokenImageIcon />
+      </Stack>
+    )
+  return (
+    <CardMedia component="img" alt="green iguana" height="180" image={url} />
+  )
+}
+
+function DefaultImage() {
+  return (
+    <Stack
+      justifyContent="center"
+      alignItems="center"
+      sx={{
+        width: '100%',
+        height: 180,
+        backgroundColor: '#ddd'
+      }}
+    >
+      <BrokenImageIcon />
+    </Stack>
+  )
+}
 
 export default function ProductEntry({ id }: { id: string }) {
   const { product, productLoading } = useGetProduct(id)
   const { isMobile } = useScreen()
+
+  const thumbnail = product?.images?.[0] && { key: product.images[0] }
+  console.log('thumbnail', thumbnail)
 
   return (
     <div>
@@ -35,12 +84,7 @@ export default function ProductEntry({ id }: { id: string }) {
       )}
       {product && (
         <Card id={product.id} sx={{ borderRadius: isMobile ? 0 : 1 }}>
-          <CardMedia
-            component="img"
-            alt="green iguana"
-            height="180"
-            image="https://images.unsplash.com/photo-1551963831-b3b1ca40c98e"
-          />
+          {(thumbnail && <ProductImage file={thumbnail} />) || <DefaultImage />}
           <CardContent>
             <Typography gutterBottom variant="h5" component="div">
               {product.name}

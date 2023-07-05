@@ -4,8 +4,9 @@ import useSWRMutation, {
   SWRMutationConfiguration
 } from 'swr/mutation'
 
-import { updateProduct } from '@/lib/bruno'
-import { Product, UpdateProductInput } from '@/models'
+import { API, GRAPHQL_AUTH_MODE } from '@/amigo'
+import { updateProductMutation } from '@/graphql/product/mutations'
+import { Product, UpdateProductInput, UpdateProductResultData } from '@/models'
 
 type Data = Product
 type Error = any
@@ -17,8 +18,17 @@ type Key = {
 }
 type SWRData = Product
 
-const fetcher: MutationFetcher<Data, Key, ExtraArg> = async (key, options) => {
-  return updateProduct(options.arg.input, key.accessToken)
+const fetcher: MutationFetcher<Data, Key, ExtraArg> = async (key, { arg }) => {
+  const { accessToken } = key
+  const { input } = arg
+  const res = await API.graphql<UpdateProductResultData>({
+    query: updateProductMutation,
+    variables: { input },
+    authMode: GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS,
+    authToken: accessToken
+  })
+  if (!res.data?.updateProduct) throw new Error('No data returned')
+  return res.data.updateProduct
 }
 
 const options: SWRMutationConfiguration<Data, Error, Key, ExtraArg, SWRData> = {
@@ -29,7 +39,7 @@ const options: SWRMutationConfiguration<Data, Error, Key, ExtraArg, SWRData> = {
   revalidate: false
 }
 
-export default function useUpdateProduct(id: string) {
+export function useUpdateProduct(id: string) {
   const session = useSession()
   const key = {
     name: 'product',

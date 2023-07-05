@@ -2,15 +2,12 @@ import type { NextAuthOptions } from 'next-auth'
 import CognitoProvider from 'next-auth/providers/cognito'
 import CredentialsProvider from 'next-auth/providers/credentials'
 
-import awsExports from '@/aws-exports'
-import { Auth } from '@/lib/aws'
+import { Auth } from '@/amigo'
 import logger from '@/lib/logger'
 
 const clientId = process.env.COGNITO_CLIENT_ID!
 const clientSecret = process.env.COGNITO_CLIENT_SECRET!
 const issuer = process.env.COGNITO_ISSUER!
-
-Auth.configure(awsExports)
 
 export const authOptions: NextAuthOptions = {
   session: {

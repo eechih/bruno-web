@@ -1,5 +1,6 @@
 'use client'
-import useDeleteProduct from '@/hooks/useDeleteProduct'
+
+import { useDeleteProduct } from '@/hooks/useDataOperation'
 import LoadingButton from '@mui/lab/LoadingButton'
 import { SnackbarProvider, enqueueSnackbar } from 'notistack'
 

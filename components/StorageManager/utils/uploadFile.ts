@@ -1,4 +1,4 @@
-import { Storage, StorageAccessLevel } from '@/lib/aws/storage'
+import { Storage, StorageAccessLevel } from '@/amigo/storage'
 
 export type UploadFileProps = {
   file: File

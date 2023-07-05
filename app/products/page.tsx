@@ -6,7 +6,7 @@ import Grid from '@mui/material/Unstable_Grid2'
 import Link from 'next/link'
 
 import { ProductEntry } from '@/components/product'
-import useListProducts from '@/hooks/useListProducts'
+import { useListProducts } from '@/hooks/useDataOperation'
 
 export default function Page() {
   const { products, productsLoading } = useListProducts()

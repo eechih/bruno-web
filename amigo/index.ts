@@ -1,4 +1,5 @@
 export * from './api'
 export * from './auth'
+export { Amigo } from './core'
 export * from './core/types'
 export * from './storage'

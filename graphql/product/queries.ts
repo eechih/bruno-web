@@ -4,6 +4,7 @@ export const listProductsQuery = /* GraphQL */ `
       items {
         id
       }
+      scannedCount
       nextToken
     }
   }
@@ -14,12 +15,17 @@ export const getProductQuery = /* GraphQL */ `
     getProduct(id: $id) {
       id
       name
+      description
       price
       cost
+      optionGrid
       images
       provider
       offShelfAt
-      description
+      publishAt
+      createdAt
+      updatedAt
+      owner
     }
   }
 `

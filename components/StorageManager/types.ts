@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-vars */
 
-import { StorageAccessLevel, UploadTask } from '@/lib/aws/storage'
+import { StorageAccessLevel, UploadTask } from '@/amigo/storage'
 import { DialogProps } from './ui/Dialog'
 
 export enum FileStatus {

@@ -18,11 +18,10 @@ export class GraphQLAPIClass {
 
   constructor(options: GraphQLAPIOptions) {
     this._options = options
-    logger.debug('API Options', this._options)
   }
 
   configure(options: any) {
-    logger.debug('configure GraphQL API', { options })
+    logger.debug('configure GraphQLAPI')
     this._options = Object.assign({}, this._options, options)
     return this._options
   }

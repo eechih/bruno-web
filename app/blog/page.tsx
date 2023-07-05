@@ -9,11 +9,11 @@ import Tooltip from '@mui/material/Tooltip'
 import NextImage from 'next/image'
 import { FormEvent, useState } from 'react'
 
+import { Amigo, Storage } from '@/amigo'
 import awsExports from '@/aws-exports'
-import { Storage } from '@/lib/aws'
 import logger from '@/lib/logger'
 
-Storage.configure(awsExports)
+Amigo.configure(awsExports)
 
 export default function Page() {
   const [imageUrls, setImageUrls] = useState<string[]>([])

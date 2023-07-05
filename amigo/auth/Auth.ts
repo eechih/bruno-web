@@ -5,8 +5,9 @@ import {
   InitiateAuthCommand
 } from '@aws-sdk/client-cognito-identity-provider'
 
-import { Credentials, ICredentials, parseAWSExports } from '@/lib/aws/core'
+import { Credentials, ICredentials, parseAWSExports } from '@/amigo/core'
 import logger from '@/lib/logger'
+import { Amigo } from '../core'
 import { AuthOptions } from './types'
 
 export class AuthClass {
@@ -18,7 +19,6 @@ export class AuthClass {
 
   constructor(config?: AuthOptions) {
     this._config = config || {}
-    logger.debug('Auth Options', this._config)
   }
 
   configure(config?: any): AuthOptions {
@@ -28,6 +28,10 @@ export class AuthClass {
     this._config = Object.assign({}, this._config, awsConfig.Auth)
     this.Credentials.configure(config)
     return this._config
+  }
+
+  public getModuleName() {
+    return 'Auth'
   }
 
   async refreshCognitoAccessToken(
@@ -62,3 +66,4 @@ export class AuthClass {
 }
 
 export const Auth = new AuthClass()
+Amigo.register(Auth)

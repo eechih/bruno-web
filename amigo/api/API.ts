@@ -1,5 +1,6 @@
-import { Credentials } from '@/lib/aws/core'
+import { Credentials } from '@/amigo/core'
 import logger from '@/lib/logger'
+import { Amigo } from '../core'
 import { GraphQLAPIClass } from './GraphQLAPI'
 import { APIOptions, GraphQLOptions, GraphQLResult } from './types'
 
@@ -14,8 +15,11 @@ export class APIClass {
 
   constructor(config?: APIOptions) {
     this._config = config || {}
-    logger.debug('API Options', this._config)
     this._graphqlApi = new GraphQLAPIClass(config || {})
+  }
+
+  public getModuleName() {
+    return 'API'
   }
 
   public configure(config?: any): APIOptions {
@@ -33,3 +37,4 @@ export class APIClass {
 }
 
 export const API = new APIClass()
+Amigo.register(API)

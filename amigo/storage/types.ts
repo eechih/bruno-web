@@ -4,7 +4,7 @@ import {
   _Object as ListObjectsCommandOutputContent
 } from '@aws-sdk/client-s3'
 
-import { ICredentials } from '@/lib/aws'
+import { ICredentials } from '@/amigo'
 
 export type StorageAccessLevel = 'private' | 'protected' | 'public'
 

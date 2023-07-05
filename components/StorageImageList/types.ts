@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-vars */
-import { StorageAccessLevel } from '@/lib/aws/storage'
+import { StorageAccessLevel } from '@/amigo/storage'
 
 export interface StorageImageFile {
   key: string

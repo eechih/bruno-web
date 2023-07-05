@@ -14,8 +14,9 @@ import { S3RequestPresigner } from '@aws-sdk/s3-request-presigner'
 import { createRequest } from '@aws-sdk/util-create-request'
 import { formatUrl } from '@aws-sdk/util-format-url'
 import { getSession } from 'next-auth/react'
+import { Amigo } from '../core'
 
-import { ICredentials, parseAWSExports } from '@/lib/aws/core'
+import { ICredentials, parseAWSExports } from '@/amigo/core'
 import logger from '@/lib/logger'
 import { StorageErrorStrings } from './StorageErrorStrings'
 import {
@@ -39,7 +40,6 @@ export class StorageClass {
 
   constructor(config?: StorageOptions) {
     this._config = config || {}
-    logger.debug('Storage Options', this._config)
   }
 
   configure(config?: any): StorageOptions {
@@ -51,6 +51,10 @@ export class StorageClass {
       logger.debug('Do not have bucket yet')
     }
     return this._config
+  }
+
+  public getModuleName() {
+    return 'Storage'
   }
 
   private async _ensureCredentials(): Promise<boolean> {
@@ -265,3 +269,4 @@ export class StorageClass {
 }
 
 export const Storage = new StorageClass()
+Amigo.register(Storage)

@@ -7,6 +7,7 @@ import {
 } from '@aws-sdk/client-cognito-identity'
 
 import logger from '@/lib/logger'
+import { Amigo } from '.'
 import { parseAWSExports } from './parseAWSExports'
 import { CredentialsOptions, ICredentials } from './types'
 
@@ -18,11 +19,13 @@ export class CredentialsClass {
 
   constructor(config?: CredentialsOptions) {
     this._config = config || {}
-    logger.debug('Credentials Options', this._config)
+  }
+
+  public getModuleName() {
+    return 'Credentials'
   }
 
   configure(config?: any): CredentialsOptions {
-    logger.debug('configure Credentials')
     if (!config) return this._config
     const awsConfig = parseAWSExports(config)
     this._config = Object.assign({}, this._config, awsConfig.Auth)
@@ -84,3 +87,4 @@ export class CredentialsClass {
 }
 
 export const Credentials = new CredentialsClass()
+Amigo.register(Credentials)

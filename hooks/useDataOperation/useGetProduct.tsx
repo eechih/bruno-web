@@ -1,8 +1,9 @@
 import { useSession } from 'next-auth/react'
 import useSWR, { Fetcher } from 'swr'
 
-import { getProduct } from '@/lib/bruno'
-import { Product } from '@/models'
+import { API, GRAPHQL_AUTH_MODE } from '@/amigo'
+import { getProductQuery } from '@/graphql/product/queries'
+import { GetProductResultData, Product } from '@/models'
 
 type Data = Product
 type Key = {
@@ -13,10 +14,18 @@ type Key = {
 
 // eslint-disable-next-line no-unused-vars
 const fetcher: Fetcher<Data, Key> = async key => {
-  return getProduct(key.productId, key.accessToken)
+  const { productId, accessToken } = key
+  const res = await API.graphql<GetProductResultData>({
+    query: getProductQuery,
+    variables: { id: productId },
+    authMode: GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS,
+    authToken: accessToken
+  })
+  if (!res.data?.getProduct) throw new Error('No data returned')
+  return res.data.getProduct
 }
 
-export default function useGetProduct(id: string) {
+export function useGetProduct(id: string) {
   const session = useSession()
   const key = {
     name: 'product',

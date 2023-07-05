@@ -10,7 +10,7 @@ import Skeleton from '@mui/material/Skeleton'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 
-import useGetProduct from '@/hooks/useGetProduct'
+import { useGetProduct } from '@/hooks/useDataOperation'
 import { useScreen } from '@/hooks/useMediaQuery'
 import useStorageURL from '@/hooks/useStorageURL'
 import DeleteProductButton from './DeleteProductButton'

@@ -1,7 +1,7 @@
 'use client'
 
 import { ProductForm } from '@/components/product'
-import useGetProduct from '@/hooks/useGetProduct'
+import { useGetProduct } from '@/hooks/useDataOperation'
 
 type PageProps = {
   params: { productId: string }

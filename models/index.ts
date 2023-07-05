@@ -1,2 +1,2 @@
-export type * from '@/lib/bruno/post/types'
-export type * from '@/lib/bruno/product/types'
+export type * from './post'
+export type * from './product'

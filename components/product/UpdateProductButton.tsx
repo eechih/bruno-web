@@ -6,7 +6,7 @@ import { enqueueSnackbar, SnackbarProvider } from 'notistack'
 import { startTransition } from 'react'
 import { SubmitHandler, useFormContext } from 'react-hook-form'
 
-import useUpdateProduct from '@/hooks/useUpdateProduct'
+import { useUpdateProduct } from '@/hooks/useDataOperation'
 import logger from '@/lib/logger'
 import { toOffShelfAt } from '@/lib/utils'
 import { UpdateProductInput } from '@/models'

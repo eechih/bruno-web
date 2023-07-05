@@ -6,9 +6,14 @@ export const createProductMutation = /* GraphQL */ `
       description
       price
       cost
+      optionGrid
       images
       provider
       offShelfAt
+      publishAt
+      createdAt
+      updatedAt
+      owner
     }
   }
 `
@@ -21,9 +26,14 @@ export const updateProductMutation = /* GraphQL */ `
       description
       price
       cost
+      optionGrid
       images
       provider
       offShelfAt
+      publishAt
+      createdAt
+      updatedAt
+      owner
     }
   }
 `
@@ -36,9 +46,14 @@ export const deleteProductMutation = /* GraphQL */ `
       description
       price
       cost
+      optionGrid
       images
       provider
       offShelfAt
+      publishAt
+      createdAt
+      updatedAt
+      owner
     }
   }
 `

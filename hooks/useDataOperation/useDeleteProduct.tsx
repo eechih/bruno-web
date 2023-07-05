@@ -4,8 +4,14 @@ import useSWRMutation, {
   SWRMutationConfiguration
 } from 'swr/mutation'
 
-import { deleteProduct } from '@/lib/bruno'
-import { DeleteProductInput, Product, ProductConnection } from '@/models'
+import { API, GRAPHQL_AUTH_MODE } from '@/amigo'
+import { deleteProductMutation } from '@/graphql/product/mutations'
+import {
+  DeleteProductInput,
+  DeleteProductResultData,
+  Product,
+  ProductConnection
+} from '@/models'
 
 type Data = Product
 type Error = any
@@ -18,7 +24,16 @@ type ExtraArg = { input: DeleteProductInput }
 type SWRData = ProductConnection
 
 const fetcher: MutationFetcher<Data, Key, ExtraArg> = async (key, { arg }) => {
-  return deleteProduct(arg.input, key.accessToken)
+  const { accessToken } = key
+  const { input } = arg
+  const res = await API.graphql<DeleteProductResultData>({
+    query: deleteProductMutation,
+    variables: { input },
+    authMode: GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS,
+    authToken: accessToken
+  })
+  if (!res.data?.deleteProduct) throw new Error('No data returned')
+  return res.data.deleteProduct
 }
 
 const options: SWRMutationConfiguration<Data, Error, Key, ExtraArg, SWRData> = {
@@ -34,7 +49,7 @@ const options: SWRMutationConfiguration<Data, Error, Key, ExtraArg, SWRData> = {
   revalidate: false
 }
 
-export default function useDeleteProduct() {
+export function useDeleteProduct() {
   const session = useSession()
   const key = {
     name: 'products',

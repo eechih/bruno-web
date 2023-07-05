@@ -2,7 +2,7 @@
 
 import useSWR, { Fetcher } from 'swr'
 
-import { Storage } from '@/lib/aws/storage'
+import { Storage } from '@/amigo'
 
 type Data = string
 type Key = {

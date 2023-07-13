@@ -119,7 +119,7 @@ export class StorageClass {
     try {
       const response = await s3.send(new PutObjectCommand(params))
       logger.debug('upload result', response)
-      logger.debug(`Upload success for ${key}`)
+      logger.debug(`Upload success for ${finalKey}`)
       return {
         key: finalKey
       }

@@ -25,12 +25,21 @@ export function useUploadFiles(props: UseUploadFilesProps) {
 
     for (const { file, key, id } of filesReadyToUpload) {
       if (file) {
-        uploadFile({ file, key, level: accessLevel }).then(() => {
-          onUploadSuccess?.({ key })
-          setUploadSuccess({ id })
-        })
+        uploadFile({ file, key, level: accessLevel }).then(
+          ({ key: finalKey }) => {
+            onUploadSuccess?.({ key: finalKey })
+            setUploadSuccess({ id })
+          }
+        )
         setUploadingFile({ id })
       }
     }
-  }, [files, accessLevel])
+  }, [
+    files,
+    accessLevel,
+    maxFileCount,
+    setUploadSuccess,
+    setUploadingFile,
+    onUploadSuccess
+  ])
 }

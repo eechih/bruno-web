@@ -86,7 +86,7 @@ export default function ProductForm({ product }: ProductFormProps) {
               variant={variant}
             />
             <Input
-              name="option"
+              name="options"
               control={control}
               label="規格"
               type="txt"
@@ -138,13 +138,30 @@ export default function ProductForm({ product }: ProductFormProps) {
           <Stack spacing={2} component={Paper} sx={{ padding: 2 }}>
             <Typography variant="h6">社群貼文內容</Typography>
             <Input
-              name="description"
+              name="fbMessage"
               type="txt"
               control={control}
-              label="描述"
+              label="貼文內容"
               fullWidth
               minRows={15}
               multiline
+              variant={variant}
+            />
+            <Select
+              name="fbGroupId"
+              control={control}
+              label="要貼文之社團"
+              options={[
+                {
+                  value: '913862951959460',
+                  label: 'Sophia 愛分享'
+                },
+                {
+                  value: '384011198690249',
+                  label: '【團媽蘇菲亞】 揪團 批發社'
+                }
+              ]}
+              fullWidth
               variant={variant}
             />
           </Stack>
@@ -212,13 +229,15 @@ export function convertToInputs(product: Product): ProductFormInputs {
   return {
     id: product.id,
     name: product.name,
+    description: product.description ?? '',
     price: product.price?.toString() ?? '',
     cost: product.cost?.toString() ?? '',
     provider: product.provider ?? '',
     offShelfDate,
     offShelfTime,
-    description: product.description ?? '',
-    option: '',
-    images: images
+    options: product.options?.toString() ?? '',
+    images: images,
+    fbMessage: product.fbMessage ?? '',
+    fbGroupId: product.fbGroupId ?? ''
   }
 }

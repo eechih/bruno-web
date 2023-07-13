@@ -11,6 +11,7 @@ import logger from '@/lib/logger'
 import { toOffShelfAt } from '@/lib/utils'
 import { UpdateProductInput } from '@/models'
 import { ProductFormInputs } from './types'
+import { parseOptions } from './utils'
 
 type UpdateProductButtonProps = {
   productId: string
@@ -33,11 +34,14 @@ export default function UpdateProductButton({
       if (dirtyFields.price) input.price = Number(data.price)
       if (dirtyFields.cost) input.cost = Number(data.cost)
       if (dirtyFields.description) input.description = data.description
+      if (dirtyFields.options) input.options = parseOptions(data.options)
       if (dirtyFields.images?.some(image => image.key))
         input.images = data.images.map(image => image.key)
       if (dirtyFields.provider) input.provider = data.provider
       if (dirtyFields.offShelfDate || dirtyFields.offShelfTime)
         input.offShelfAt = toOffShelfAt(data.offShelfDate, data.offShelfTime)
+      if (dirtyFields.fbMessage) input.fbMessage = data.fbMessage
+      if (dirtyFields.fbGroupId) input.fbGroupId = data.fbGroupId
 
       console.log('updateProduct', input)
       await updateProduct({ input })

@@ -6,11 +6,17 @@ export const createProductMutation = /* GraphQL */ `
       description
       price
       cost
-      optionGrid
+      options
       images
       provider
       offShelfAt
-      publishAt
+      fbMessage
+      fbGroupId
+      fbPostId
+      fbPostedAt
+      bp1ProductId
+      bp1CreatedAt
+      publishState
       createdAt
       updatedAt
       owner
@@ -26,11 +32,17 @@ export const updateProductMutation = /* GraphQL */ `
       description
       price
       cost
-      optionGrid
+      options
       images
       provider
       offShelfAt
-      publishAt
+      fbMessage
+      fbGroupId
+      fbPostId
+      fbPostedAt
+      bp1ProductId
+      bp1CreatedAt
+      publishState
       createdAt
       updatedAt
       owner
@@ -46,11 +58,17 @@ export const deleteProductMutation = /* GraphQL */ `
       description
       price
       cost
-      optionGrid
+      options
       images
       provider
       offShelfAt
-      publishAt
+      fbMessage
+      fbGroupId
+      fbPostId
+      fbPostedAt
+      bp1ProductId
+      bp1CreatedAt
+      publishState
       createdAt
       updatedAt
       owner
@@ -58,17 +76,28 @@ export const deleteProductMutation = /* GraphQL */ `
   }
 `
 
-export const publishProductMutation = /* GraphQL */ `
-  mutation PublishProduct($input: PublishProductInput!) {
-    publishProduct(input: $input) {
+export const asyncPublishProductMutation = /* GraphQL */ `
+  mutation AsyncPublishProduct($input: AsyncPublishProductInput!) {
+    asyncPublishProduct(input: $input) {
       id
       name
       description
       price
       cost
+      options
       images
       provider
       offShelfAt
+      fbMessage
+      fbGroupId
+      fbPostId
+      fbPostedAt
+      bp1ProductId
+      bp1CreatedAt
+      publishState
+      createdAt
+      updatedAt
+      owner
     }
   }
 `

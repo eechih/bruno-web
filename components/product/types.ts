@@ -7,12 +7,14 @@ export interface ProductFormProps {
 export type ProductFormInputs = {
   id?: string
   name: string
+  description: string
   price: string
   cost: string
   provider: string
   offShelfDate: string
   offShelfTime: string
-  description: string
-  option: string
+  options: string
   images: { key: string }[]
+  fbMessage: string
+  fbGroupId: string
 }

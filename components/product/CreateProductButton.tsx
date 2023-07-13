@@ -9,6 +9,7 @@ import { useCreateProduct } from '@/hooks/useDataOperation'
 import { toOffShelfAt } from '@/lib/utils'
 import { CreateProductInput } from '@/models'
 import { ProductFormInputs } from './types'
+import { parseOptions } from './utils'
 
 type CreateProductButtonProps = {
   onSuccess?: () => void
@@ -24,12 +25,15 @@ export default function CreateProductButton(props: CreateProductButtonProps) {
     try {
       const input: CreateProductInput = {
         name: data.name,
+        description: data.description,
         price: Number(data.price),
         cost: Number(data.cost),
-        description: data.description,
+        options: parseOptions(data.options),
         images: data.images.map(image => image.key),
         provider: data.provider,
-        offShelfAt: toOffShelfAt(data.offShelfDate, data.offShelfTime)
+        offShelfAt: toOffShelfAt(data.offShelfDate, data.offShelfTime),
+        fbMessage: data.fbMessage,
+        fbGroupId: data.fbGroupId
       }
       await createProduct({ input })
       reset(data)

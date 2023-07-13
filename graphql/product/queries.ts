@@ -18,11 +18,17 @@ export const getProductQuery = /* GraphQL */ `
       description
       price
       cost
-      optionGrid
+      options
       images
       provider
       offShelfAt
-      publishAt
+      fbMessage
+      fbGroupId
+      fbPostId
+      fbPostedAt
+      bp1ProductId
+      bp1CreatedAt
+      publishState
       createdAt
       updatedAt
       owner

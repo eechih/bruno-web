@@ -104,7 +104,7 @@ export class StorageClass {
     const { bucket } = opt
 
     const prefix = await this._prefix(opt)
-    const finalKey = prefix + key
+    const finalKey = key.startsWith(prefix) ? key : prefix + key
     const type = config?.contentType ?? 'binary/octet-stream'
     const s3 = this._createNewS3Client()
 
@@ -140,7 +140,7 @@ export class StorageClass {
     const { bucket, nextToken, pageSize } = opt
 
     const prefix = await this._prefix(opt)
-    const finalPath = prefix + path
+    const finalPath = path.startsWith(prefix) ? path : prefix + path
     const s3 = this._createNewS3Client()
 
     logger.debug('list ' + path + ' from ' + finalPath)
@@ -195,7 +195,7 @@ export class StorageClass {
     const { credentials, region, bucket, download } = opt
 
     const prefix = await this._prefix(opt)
-    const finalKey = prefix + key
+    const finalKey = key.startsWith(prefix) ? key : prefix + key
     const s3 = this._createNewS3Client()
 
     const params: GetObjectCommandInput = {
@@ -248,7 +248,7 @@ export class StorageClass {
     const { bucket } = opt
 
     const prefix = await this._prefix(opt)
-    const finalKey = prefix + key
+    const finalKey = key.startsWith(prefix) ? key : prefix + key
     const s3 = this._createNewS3Client()
     logger.debug('remove ' + key + ' from ' + finalKey)
 

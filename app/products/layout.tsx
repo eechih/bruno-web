@@ -9,5 +9,9 @@ import { ReactChildren } from '@/lib/types'
 Amigo.configure(awsExports)
 
 export default function Layout({ children }: ReactChildren) {
-  return <Container maxWidth="xl">{children}</Container>
+  return (
+    <Container maxWidth="lg" sx={{ py: 2 }}>
+      {children}
+    </Container>
+  )
 }

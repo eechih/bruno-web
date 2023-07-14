@@ -84,3 +84,6 @@ export type UpdateProductResultData = {
 export type DeleteProductResultData = {
   deleteProduct: Product
 }
+export type AsyncPublishProductResultData = {
+  asyncPublishProduct: Product
+}

@@ -13,12 +13,18 @@ import Typography from '@mui/material/Typography'
 import moment from 'moment'
 import Link from 'next/link'
 
-import { useGetProduct } from '@/hooks/useDataOperation'
+import { useGetProduct, usePublishProduct } from '@/hooks/useDataOperation'
 import { Product } from '@/models'
 import ProductThumbnail from './ProductThumbnail'
 
 function ProductRow({ id }: { id: string }) {
   const { product, productLoading } = useGetProduct(id)
+  const { publishProduct, isPublishing } = usePublishProduct()
+
+  const handlePublishClick = async () => {
+    await publishProduct({ input: { id } })
+  }
+
   if (product) {
     const { id, name, price, cost, provider, images, publishState } = product
     const thumbnail = images?.[0] && { key: images[0] }
@@ -69,7 +75,9 @@ function ProductRow({ id }: { id: string }) {
             <Button size="small" LinkComponent={Link} href={`/products/${id}`}>
               編輯
             </Button>
-            <Button onClick={() => {}}>發佈</Button>
+            <Button disabled={isPublishing} onClick={handlePublishClick}>
+              發佈
+            </Button>
           </Stack>
         </TableCell>
       </TableRow>
